@@ -1,0 +1,5 @@
+node_modules/
+kitsup-front/node_modules/
+kitsup-front/dist/
+kitsup-back/node_modules/
+.env

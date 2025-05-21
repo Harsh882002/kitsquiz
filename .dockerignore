@@ -1,0 +1,4 @@
+node_modules
+kitsup-front/node_modules
+kitsup-front/dist
+kitsup-backend/node_modules
