@@ -1,5 +1,5 @@
 # Step 1: Use official Node image
-FROM node:18
+FROM node:22
 
 # Step 2: Set working directory
 WORKDIR /app
