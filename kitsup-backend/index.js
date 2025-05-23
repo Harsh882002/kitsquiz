@@ -17,25 +17,56 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Debugging middleware (remove in production)
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 
-// Serve static files from React app
+// ==================== CRITICAL CHANGES BELOW ====================
 const frontendPath = path.join(__dirname, '../kitsup-front/dist');
-app.use(express.static(frontendPath));
+console.log('Serving static files from:', frontendPath);
 
-// Handle SPA by sending index.html for all non-API routes
-app.get(/^(?!\/api).*/, (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
+// Serve static files with proper error handling
+app.use(express.static(frontendPath, {
+  dotfiles: 'ignore',
+  extensions: ['html', 'js', 'css', 'json'],
+  fallthrough: false // Fail fast if file not found
+}));
+
+// SPA Fallback with enhanced error handling
+app.get(/^(?!\/api).*/, (req, res, next) => {
+  const indexPath = path.join(frontendPath, 'index.html');
+  console.log('Serving index.html from:', indexPath);
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('Error sending index.html:', err);
+      next(err);
+    }
+  });
 });
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
+  console.error('ERROR:', {
+    message: err.message,
+    stack: err.stack,
+    url: req.originalUrl
+  });
+  
+  res.status(500).json({
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Something broke!',
+    hint: 'Check server logs and verify frontend build exists at ' + frontendPath
+  });
 });
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Static files path: ${frontendPath}`);
+  console.log(`Access app: http://localhost:${PORT}`);
 });
