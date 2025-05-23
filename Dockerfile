@@ -1,32 +1,34 @@
-# Step 1: Use official Node image
-FROM node:22
+# Stage 1: Build frontend
+FROM node:22 as frontend-builder
 
-# Step 2: Set working directory
-WORKDIR /app
-
-# Step 3: Copy both frontend and backend package.json files
-COPY kitsup-front/package*.json ./kitsup-front/
-COPY kitsup-backend/package*.json ./kitsup-backend/
-
-# Step 4: Install frontend dependencies & build
 WORKDIR /app/kitsup-front
+COPY kitsup-front/package*.json ./
 RUN npm install
+COPY kitsup-front/ .
 RUN npm run build
 
-# Step 5: Install backend dependencies
-WORKDIR /app/kitsup-backend
-RUN npm install
+# Stage 2: Build backend and combine
+FROM node:22
 
-# Step 6: Go back to root & copy full source
 WORKDIR /app
-COPY kitsup-front/ ./kitsup-front/
+
+# 1. Copy backend files first
+COPY kitsup-backend/package*.json ./kitsup-backend/
+WORKDIR /app/kitsup-backend
+RUN npm install --production
+
+# 2. Copy built frontend to backend's static folder
+WORKDIR /app
+COPY --from=frontend-builder /app/kitsup-front/dist ./kitsup-backend/public
+
+# 3. Copy backend source (after dependencies for better caching)
 COPY kitsup-backend/ ./kitsup-backend/
 
-# Step 7: Set environment port
+# Environment setup
 ENV PORT=8080
-
-# Step 8: Expose port
+ENV NODE_ENV=production
 EXPOSE 8080
 
-# Step 9: Start Express server
-CMD ["node", "kitsup-backend/index.js"]
+# Startup command
+WORKDIR /app/kitsup-backend
+CMD ["node", "index.js"]

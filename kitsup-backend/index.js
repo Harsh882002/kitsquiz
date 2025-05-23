@@ -2,27 +2,40 @@ import express from 'express';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
 import cors from 'cors';
-import path from
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config(); // Load environment variables
+// Fix for __dirname in ES6
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config();
 
 const app = express();
 
-// Middleware setup
-app.use(express.json()); // For parsing JSON bodies
-app.use(cors()); // Enable cross-origin resource sharing
+// Middleware
+app.use(express.json());
+app.use(cors());
 
-app.use(express.static(path.join(__dirname, "../kitsup-front/dist")));
-
-app.get("*",(req,res) =>{
-  res.sendFile(path.join(__dirname,".../kitsup-front/dist/index.html"))
-});
 // API Routes
-app.use('/api/auth', authRoutes); 
+app.use('/api/auth', authRoutes);
 
- 
-// Start server on specified port
+// Serve static files from React app
+const frontendPath = path.join(__dirname, '../kitsup-front/dist');
+app.use(express.static(frontendPath));
+
+// Handle SPA by sending index.html for all non-API routes
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

@@ -12,7 +12,7 @@ export const fetchTeacherTests = async (req, res) => {
       SELECT 
         t.testcode,
         t.title,
-        t.duration,
+        t.duration, 
         t.created_at,
         s.name AS studentName,
         s.email,

@@ -1,13 +1,15 @@
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export const loginApi = (credentials) =>
-  axios.post(`${import.meta.env.VITE_API_BASE_URL}/login`, credentials);
+  axios.post(`${BASE_URL}/login`, credentials);
 
 export const registerApi = (userData) =>
-  axios.post(`${import.meta.env.VITE_API_BASE_URL}/register`, userData);
+  axios.post(`${BASE_URL}/register`, userData);
 
 export const logoutApi = (token) => {
-  return axios.post(`${import.meta.env.VITE_API_BASE_URL}/logout`, null, {
+  return axios.post(`${BASE_URL}/logout`, null, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -15,148 +17,156 @@ export const logoutApi = (token) => {
 };
 
 export const quizUploadApi = async (quizData, token) => {
-  const response = await axios.post(
-    `${import.meta.env.VITE_API_BASE_URL}/uploadquiz`,
-    quizData,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  return response;
-};
-
-export const getTestByCodeApi = async (testCode, token) => {
-  const response = await axios.get(
-    `${import.meta.env.VITE_API_BASE_URL}/test/${testCode}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  return response.data;
-};
-
-//Store Student Data
-export const studentApi = (studentData, token) => {
- 
-  return axios.post(`${import.meta.env.VITE_API_BASE_URL}/student`, studentData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-};
-
-//RESULT API
- 
-export const resultApi = async (testCode, answers, score, token) => {
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}/result/${testCode}/submit`,
-      {
-        score,
-        answers,
-        testCode,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    // Handle the response here if necessary
-    if (response.status === 200) {
-       return response.data; // Return the response for further handling (like updating Redux state)
-    }
-  } catch (error) {
-    console.error("Error submitting result:", error);
-    // You can throw an error or handle it gracefully here
-    return { error: "Failed to submit results." };
-  }
-};
-
-
-
-export const getResultApi = async (testCode, token) => {
- 
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/getResult/${testCode}`, {
+    const response = await axios.post(`${BASE_URL}/uploadquiz`, quizData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    console.log("response", response.data);
     return response.data;
   } catch (error) {
-     throw error; // rethrow for further handling
+    console.error("Quiz upload failed:", error);
+    throw error;
   }
 };
 
+export const getTestByCodeApi = async (testCode, token) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/test/${testCode}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Fetching test by code failed:", error);
+    throw error;
+  }
+};
 
-//GET COUNT OF ROLES
-export const getCountApi = async(token) =>{
-  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/getCount`,{
-    headers:{
-      Authorization:`Bearer ${token}`,
+export const studentApi = async (studentData, token) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/student`, studentData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Submitting student data failed:", error);
+    throw error;
+  }
+};
+
+export const resultApi = async (testCode, answers, score, token) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/result/${testCode}/submit`, {
+      score,
+      answers,
+      testCode,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data;
     }
-  })
-  return response.data;
-}
+  } catch (error) {
+    console.error("Error submitting result:", error);
+    return { error: "Failed to submit results." };
+  }
+};
 
+export const getResultApi = async (testCode, token) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/getResult/${testCode}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Fetching result failed:", error);
+    throw error;
+  }
+};
 
+export const getCountApi = async (token) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/getCount`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch count:", error);
+    throw error;
+  }
+};
 
-//GET All  Test
-export const getAllTestApi = async(token) =>{
-  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/getalltest`,{
-    headers:{
-      Authorization:`Bearer ${token}`,
-    }
-  })
-  return response.data;
-}
+export const getAllTestApi = async (token) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/getalltest`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Fetching all tests failed:", error);
+    throw error;
+  }
+};
 
-//GET ALL TEST BY ID
-export const getAllTestByIdApi = async(userId,token) =>{
-  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/getalltest/${userId}`,{
-    headers:{
-      Authorization:`Bearer ${token}`,
-    }
-  })
-  return response.data;
-}
+export const getAllTestByIdApi = async (userId, token) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/getalltest/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Fetching tests by ID failed:", error);
+    throw error;
+  }
+};
 
+export const getTeacherTestApi = async (user_id, token) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/getalltest`, { user_id }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Fetching teacher tests failed:", error);
+    throw error;
+  }
+};
 
-//GET TESTS OF PERTICULAR TEACHER
-export const getTeacherTestApi = async(user_id,token) =>{
-  const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/getalltest`,{
-    user_id
-  },{
-    headers:{
-      Authorization:`Bearer ${token}`,
-    }
-  })
-  return response.data;
-}
-
-
-//GET STUDENTS OF PERTICULAR TEST
 export const fetchStudentsByTestcodeAPI = async (testcode) => {
   try {
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/getstudents/${testcode}`);
-     return response.data;
+    const response = await axios.get(`${BASE_URL}/getstudents/${testcode}`);
+    return response.data;
   } catch (error) {
-     throw error;  // re-throw or handle appropriately
+    console.error("Fetching students by test code failed:", error);
+    throw error;
   }
 };
 
-//getting test count
 export const fetchTestCount = async (user_id) => {
-  const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/testcount/${user_id}`);
-  return response.data;
+  try {
+    const response = await axios.get(`${BASE_URL}/testcount/${user_id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Fetching test count failed:", error);
+    throw error;
+  }
 };

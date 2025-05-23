@@ -11,41 +11,27 @@ import { saveResult } from '../results/saveResult.js';
 import { getResult } from '../results/getResult.js';
 import { getUsersCount } from '../count/getUsersCount.js';
 import { getAllTests } from '../test/getAllTests.js';
-import authMiddleware from "../middleware/auth.js"
+import authMiddleware from '../middleware/auth.js';
 import { fetchTeacherTests } from '../test/fetchTeacherTests.js';
 import { studentList } from '../student/studentList.js';
 import { countTests } from '../teachers/countTests.js';
- 
-const app = express();
 
-app.post('/login',loginUser)
+const router = express.Router();
 
-app.post('/register',registerApi);
+router.post('/login', loginUser);
+router.post('/register', registerApi);
+router.get('/getUser', getUserData);
+router.post('/uploadquiz', uploadQuiz);
+router.post('/logout', logoutUser);
+router.get('/test/:testCode', getTestData);
+router.get('/user/:userId', getUsersTests);
+router.post('/student', studentData);
+router.post('/result/:testCode/submit', saveResult);
+router.get('/getResult/:testCode', getResult);
+router.get('/getCount', getUsersCount);
+router.get('/getalltest', getAllTests);
+router.post('/getalltest', fetchTeacherTests);
+router.get('/getstudents/:testcode', studentList);
+router.get('/testcount/:user_id', countTests);
 
-app.get('/getUser',getUserData);
-
-app.post("/uploadquiz",uploadQuiz);
-
-app.post('/logout',logoutUser); 
-
-app.get('/test/:testCode',getTestData);
-
-app.get("/user/:userId",getUsersTests); 
-
-app.post("/student",studentData);
-
-app.post("/result/:testCode/submit",saveResult);
-
-app.get("/getResult/:testCode",getResult);
-
-app.get("/getCount",getUsersCount)
-
-app.get("/getalltest",getAllTests);
-
-app.post("/getalltest",fetchTeacherTests);
-
-app.get("/getstudents/:testcode",studentList);
-
-app.get("/testcount/:user_id",countTests)
- 
-export default app;
+export default router;
