@@ -9,10 +9,11 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Configure CORS to allow requests from your frontend URL
 app.use(cors({
-  origin: 'https://kitsup-front-132946936245.asia-south1.run.app', // Your frontend URL here
+  origin: '*', // Your frontend URL here
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));

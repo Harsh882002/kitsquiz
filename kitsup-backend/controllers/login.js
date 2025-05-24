@@ -35,7 +35,7 @@ export const loginUser = async (req, res) => {
     //token generation
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      process.env.SECRET_KEY,
+      "kistquiz",
       { expiresIn: "6h" }
     );
 
