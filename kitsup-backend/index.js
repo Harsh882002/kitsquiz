@@ -57,11 +57,16 @@ app.get('/api/auth/harsh', (req, res) => {
 });
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
-  console.log('DB Configuration:', {
+  console.log('DB Config:', {
     host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    database: process.env.DB_NAME
+    user: process.env.DB_USER
   });
+});
+
+// Handle startup errors
+server.on('error', (err) => {
+  console.error('Server failed to start:', err);
+  process.exit(1);
 });
