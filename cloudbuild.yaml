@@ -4,7 +4,6 @@ steps:
     dir: 'kitsup-front'    # This folder must contain your React Vite app & Dockerfile
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/kitsup-front', '.']
 
-
   # Deploy frontend
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
@@ -41,5 +40,8 @@ images:
 substitutions:
   _DB_HOST: 34.93.43.63
   _DB_USER: root
-  _DB_PASSWORD: root # <-- directly put your DB password here
+  _DB_PASSWORD: root
   _DB_NAME: kitsquizdatabase
+
+options:
+  logging: CLOUD_LOGGING_ONLY
