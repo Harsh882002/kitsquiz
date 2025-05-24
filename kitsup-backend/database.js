@@ -1,21 +1,34 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 export const db = mysql.createPool({
-    host: "34.93.43.63",
-    user: "root",
-    password: "root",
-    database: "kitsquizdatabase",
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+  socketPath: process.env.DB_HOST, // For Cloud SQL Proxy
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  connectTimeout: 10000 // 10 seconds
 });
 
-try {
-    const connection = await db.getConnection();
-    console.log("Database Connected successfully...");
-    connection.release(); // Always release the connection back to the pool
-} catch (err) {
-    console.error("Database Connection Failed...", err);
-}
+// Test connection immediately
+db.getConnection()
+  .then(conn => {
+    console.log('✅ Database connected successfully');
+    conn.release();
+  })
+  .catch(err => {
+    console.error('❌ Database connection failed:', {
+      code: err.code,
+      message: err.message,
+      config: {
+        socketPath: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        database: process.env.DB_NAME
+      }
+    });
+    process.exit(1);
+  });

@@ -28,7 +28,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/kitsup-backend']
 
-  # Deploy backend
+  # Deploy backend (CRITICAL CHANGES HERE)
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'
@@ -38,18 +38,13 @@ steps:
       - '--platform=managed'
       - '--region=asia-south1'
       - '--allow-unauthenticated'
+      - '--add-cloudsql-instances=$PROJECT_ID:asia-south1:kitsquiz'  # MUST MATCH YOUR INSTANCE
       - '--set-env-vars'
-      - 'DB_HOST=${_DB_HOST},DB_USER=${_DB_USER},DB_PASS=${_DB_PASSWORD},DB_NAME=${_DB_NAME}'
+      - 'DB_HOST=/cloudsql/$PROJECT_ID:asia-south1:kitsquiz,DB_USER=root,DB_PASSWORD=root,DB_NAME=kitsquizdatabase'
 
 images:
   - 'gcr.io/$PROJECT_ID/kitsup-front'
   - 'gcr.io/$PROJECT_ID/kitsup-backend'
-
-substitutions:
-  _DB_HOST: 34.93.43.63
-  _DB_USER: root
-  _DB_PASSWORD: root
-  _DB_NAME: kitsquizdatabase
 
 options:
   logging: CLOUD_LOGGING_ONLY
