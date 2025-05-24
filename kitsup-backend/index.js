@@ -23,7 +23,12 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // API routes
+app.get('/api/auth/harsh', (req, res) => {  
+  res.json({ message: 'Welcome Harsh kya seva kar sakta mai aapki' });
+});
+
 app.use('/api/auth', authRoutes);
 
 // Error handling middleware
