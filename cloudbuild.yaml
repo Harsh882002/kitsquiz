@@ -40,7 +40,7 @@ steps:
       - '--region=asia-south1'
       - '--allow-unauthenticated'
       - '--add-cloudsql-instances=$PROJECT_ID:asia-south1:kitsquiz'
-      - '--set-env-vars=DB_HOST=/cloudsql/$PROJECT_ID:asia-south1:kitsquiz,DB_USER=root,DB_PASSWORD=root,DB_NAME=kitsquizdatabase,PORT=8080'
+      - '--set-env-vars=DB_HOST=/cloudsql/$PROJECT_ID:asia-south1:kitsquiz,DB_USER=root,DB_PASSWORD=root,DB_NAME=kitsquizdatabase'
       - '--port=8080'
       - '--timeout=300s'
       - '--cpu=1'

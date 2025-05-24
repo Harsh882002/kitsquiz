@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import db from './db.js'; // Make sure this path is correct
-import cors from 'cors';
+ import cors from 'cors';
+import { db } from './kitsup-backend/database.js';
 
 dotenv.config();
 
