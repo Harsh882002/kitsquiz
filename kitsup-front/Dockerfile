@@ -13,7 +13,7 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Copy custom nginx config to replace default config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 8080 since nginx will listen on it
-EXPOSE 8080
+# Expose port 80 since nginx will listen on it
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
