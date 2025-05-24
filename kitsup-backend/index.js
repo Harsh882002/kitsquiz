@@ -67,6 +67,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Static files path: ${frontendPath}`);
-  console.log(`Access app: http://localhost:${PORT}`);
+   
 });
