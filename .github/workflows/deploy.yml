@@ -71,4 +71,4 @@ jobs:
               us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
 
             echo "✅ Deployment completed."
-          EOF
+          EOF 
