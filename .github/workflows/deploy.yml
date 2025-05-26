@@ -57,7 +57,7 @@ jobs:
             docker rm frontend-app || true
 
             echo "Starting backend container..."
-            docker run -d --name backend-app \
+            docker run -d --restart unless-stopped --name backend-app \
               -p 8080:8080 \
               -e DB_HOST=${{ secrets.DB_HOST }} \
               -e DB_PORT=${{ secrets.DB_PORT }} \
@@ -67,5 +67,5 @@ jobs:
               gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend
 
             echo "Starting frontend container..."
-            docker run -d --name frontend-app -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front
+            docker run -d --restart unless-stopped --name frontend-app -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front
           EOF
