@@ -17,8 +17,7 @@ const Login = () => {
     const isMobile = useMediaQuery('(max-width:600px)');
 
 
-
-    useEffect(() => {
+     useEffect(() => {
         const isLoggedIn = localStorage.getItem('token');
         if (isLoggedIn) {
             window.location.replace("/dashboard")
@@ -27,6 +26,7 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+         
         dispatch(loginUser({ email, password }));
     };
 

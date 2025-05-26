@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const loginUser = async (req, res) => {
+
   const { email, password } = req.body;
 
   console.log(req.body);
@@ -28,7 +29,9 @@ export const loginUser = async (req, res) => {
 
     // checking password is matching or not
     const match = await bcrypt.compare(password, user.password);
+
     if (!match) {
+      console.log("Password mismatch for user:", email);
       return res.status(401).json({ message: "Invalid Credentials" });
     }
 

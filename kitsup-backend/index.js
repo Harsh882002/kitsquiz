@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
  import cors from 'cors';
 import { db } from './kitsup-backend/database.js';
+import authRoutes from './kitsup-backend/routes/authRoutes.js'; 
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: 'https://kitsup-front-132946936245.asia-south1.run.app',
+  // origin: 'https://kitsup-front-132946936245.asia-south1.run.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
@@ -51,10 +52,15 @@ app.get('/api/db-test', async (req, res) => {
   }
 });
 
+app.use('/api/auth',authRoutes);  
+
+
 // Your other routes...
 app.get('/api/auth/harsh', (req, res) => {  
   res.json({ message: 'Welcome Harsh kya seva kar sakta mai aapki' });
 });
+
+
 
 const PORT = process.env.PORT || 8080;
 const server = app.listen(PORT, '0.0.0.0', () => {
@@ -63,7 +69,7 @@ const server = app.listen(PORT, '0.0.0.0', () => {
     host: process.env.DB_HOST,
     user: process.env.DB_USER
   });
-});
+}); 
 
 // Handle startup errors
 server.on('error', (err) => {

@@ -18,6 +18,7 @@ import { countTests } from '../teachers/countTests.js';
 
 const router = express.Router();
 
+           
 router.post('/login', loginUser);
 router.post('/register', registerApi);
 router.get('/getUser', getUserData);
