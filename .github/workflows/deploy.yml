@@ -44,7 +44,7 @@ jobs:
             set -e
 
             echo "📁 Navigating to deployment folder..."
-            cd ~/kitsquiz
+            cd ~/kitsquiz 
 
             echo "🔄 Pulling latest backend image..."
             docker pull us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
