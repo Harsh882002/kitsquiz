@@ -16,14 +16,15 @@ jobs:
         run: |
           echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > key.json
           gcloud auth activate-service-account --key-file=key.json
-          gcloud auth configure-docker --quiet
+          gcloud auth configure-docker us-docker.pkg.dev --quiet
         env:
           CLOUDSDK_CORE_DISABLE_PROMPTS: '1'
 
       - name: Build and push backend Docker image 
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend ./kitsup-backend
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend
+         docker build -t us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend ./kitsup-backend
+         docker push us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
+
  
       - name: Build and push frontend Docker image  
         run: |
