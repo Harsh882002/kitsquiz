@@ -69,4 +69,4 @@ jobs:
             echo "Starting frontend container..."
             docker run -d --restart unless-stopped --name frontend-app -p 80:80 \
               us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
-          EOF
+            EOF
