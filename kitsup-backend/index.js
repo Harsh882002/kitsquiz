@@ -11,7 +11,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({ 
-  origin: 'https://kitsup-front-132946936245.asia-south1.run.app',
+  origin: 'http://34.93.5.179:8080/api/auth',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
