@@ -1,0 +1,71 @@
+name: CI/CD Deploy to GCP VM with Docker and Cloud SQL
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Authenticate with GCP Docker registry
+        run: |
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key.json
+          gcloud auth activate-service-account --key-file=key.json
+          gcloud auth configure-docker --quiet
+        env:
+          CLOUDSDK_CORE_DISABLE_PROMPTS: '1'
+
+      - name: Build and push backend Docker image
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend ./kitsup-backend
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend
+
+      - name: Build and push frontend Docker image
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front ./kitsup-front
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.GCP_VM_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy containers on GCP VM
+        run: |
+          ssh ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << EOF
+            cd ~/kitsquiz
+
+            echo "Pulling latest backend image..."
+            docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend
+
+            echo "Pulling latest frontend image..."
+            docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front
+
+            echo "Stopping existing backend container (if any)..."
+            docker stop backend-app || true
+            docker rm backend-app || true
+
+            echo "Stopping existing frontend container (if any)..."
+            docker stop frontend-app || true
+            docker rm frontend-app || true
+
+            echo "Starting backend container..."
+            docker run -d --name backend-app \
+              -p 8080:8080 \
+              -e DB_HOST=${{ secrets.DB_HOST }} \
+              -e DB_PORT=${{ secrets.DB_PORT }} \
+              -e DB_USER=${{ secrets.DB_USER }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e DB_NAME=${{ secrets.DB_NAME }} \
+              gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend
+
+            echo "Starting frontend container..."
+            docker run -d --name frontend-app -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front
+          EOF

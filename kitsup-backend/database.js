@@ -3,48 +3,43 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Unified configuration for both local and Cloud Run
+// MySQL configuration for GCP VM (TCP connection)
 const dbConfig = {
-  // Use socketPath for Cloud SQL, TCP for local
-  ...(process.env.DB_SOCKET_PATH ? { 
-    socketPath: process.env.DB_SOCKET_PATH 
-  } : {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306
-  }),
-  
+  host: process.env.DB_HOST || '127.0.0.1', // IP of Cloud SQL instance
+  port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'root',
   database: process.env.DB_NAME || 'kitsupskill',
-  
-  // Pool settings
+
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  connectTimeout: 10000 // 10 seconds
+  connectTimeout: 10000
 };
 
-// Debugging output (remove in production)
-console.log('Database Config:', {
+// Debug (optional, remove in production)
+console.log('📦 DB Config:', {
   ...dbConfig,
-  password: '***' // Mask password in logs
+  password: '***' // Mask password
 });
 
 export const db = mysql.createPool(dbConfig);
 
-// Test connection immediately
-try {
-  const conn = await db.getConnection();
-  console.log('✅ Database connected successfully');
-  conn.release();
-} catch (err) {
-  console.error('❌ Database connection failed:', {
-    error: err.message,
-    code: err.code,
-    config: {
-      ...dbConfig,
-      password: '***' // Mask password in error logs
-    }
-  });
-  process.exit(1);
-}
+// Test DB connection
+(async () => {
+  try {
+    const conn = await db.getConnection();
+    console.log('✅ DB Connected successfully');
+    conn.release();
+  } catch (err) {
+    console.error('❌ DB Connection error:', {
+      code: err.code,
+      message: err.message,
+      config: {
+        ...dbConfig,
+        password: '***'
+      }
+    });
+    process.exit(1);
+  }
+})();
