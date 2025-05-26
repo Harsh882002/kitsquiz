@@ -38,7 +38,7 @@ export const loginUser = async (req, res) => {
     //token generation
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      "kistquiz",
+      process.env.SECRET_KEY ,
       { expiresIn: "6h" }
     );
 
@@ -67,6 +67,6 @@ export const loginUser = async (req, res) => {
     });
   } catch (err) {
     console.log("Login error:", err);
-    res.status(500).json({ message: err.message || "Server error" }); 
+    res.status(500).json({ message: err.message || "Servering  error" }); 
   }
 };

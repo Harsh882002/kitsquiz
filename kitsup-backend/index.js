@@ -1,8 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
  import cors from 'cors';
-import { db } from './kitsup-backend/database.js';
-import authRoutes from './kitsup-backend/routes/authRoutes.js'; 
+ import authRoutes from './routes/authRoutes.js'; 
+import { db } from './database.js';
 
 dotenv.config();
 
@@ -10,8 +10,8 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors({
-  // origin: 'https://kitsup-front-132946936245.asia-south1.run.app',
+app.use(cors({ 
+  origin: 'https://kitsup-front-132946936245.asia-south1.run.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
@@ -20,7 +20,7 @@ app.use(cors({
 app.get('/api/db-test', async (req, res) => {
   try {
     const conn = await db.getConnection();
-    const [rows] = await conn.query('SELECT 1+1 AS result');
+    const [rows] = await conn.query('SELECT 1+1 AS result'); 
     conn.release();
     res.json({ 
       success: true, 
@@ -75,4 +75,4 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 server.on('error', (err) => {
   console.error('Server failed to start:', err);
   process.exit(1);
-});
+}); 

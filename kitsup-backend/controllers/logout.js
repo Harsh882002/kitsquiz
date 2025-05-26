@@ -18,7 +18,7 @@ export const logoutUser = async (req, res) => {
     const token = authHeader.split(" ")[1];
 
     // Verify the token to ensure it's valid
-    jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
+    jwt.verify(token,process.env.SECRET_KEY, async (err, decoded) => {
       if (err) {
         return res.status(403).json({
           success: false,
