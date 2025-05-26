@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "https://kitsup-backend-132946936245.asia-south1.run.app/api/auth";
-  // const BASE_URL ="http://localhost:8080/api/auth";
+const BASE_URL = "http://34.93.5.179:8080/api/auth";
+ 
 export const loginApi = (credentials) =>
    axios.post(`${BASE_URL}/login`, credentials);
 
