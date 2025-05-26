@@ -25,7 +25,7 @@ jobs:
           docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend ./kitsup-backend
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend
  
-      - name: Build and push frontend Docker image 
+      - name: Build and push frontend Docker image  
         run: |
           docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front ./kitsup-front
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front
