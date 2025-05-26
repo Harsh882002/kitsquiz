@@ -37,10 +37,32 @@ jobs:
           chmod 600 ~/.ssh/gcp_key
           ssh-keyscan -H ${{ secrets.GCP_VM_IP }} >> ~/.ssh/known_hosts
 
+      - name: Verify Docker on VM
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/gcp_key ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'DOCKER_CHECK'
+          set -e
+          if ! command -v docker &> /dev/null; then
+            echo "Installing Docker..."
+            sudo apt-get update
+            sudo apt-get install -y \
+                ca-certificates \
+                curl \
+                gnupg \
+                lsb-release
+            sudo mkdir -p /etc/apt/keyrings
+            curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+            echo \
+              "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+              $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+            sudo apt-get update
+            sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+            sudo usermod -aG docker $USER
+          fi
+          DOCKER_CHECK
 
       - name: Deploy containers on GCP VM
         run: |
-            ssh -o StrictHostKeyChecking=no -i ~/.ssh/gcp_key ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << EOF
+            ssh -o StrictHostKeyChecking=no -i ~/.ssh/gcp_key ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'DEPLOY_EOF'
             set -e
 
             echo "📁 Navigating to deployment folder..."
@@ -69,4 +91,4 @@ jobs:
             echo "Starting frontend container..."
             docker run -d --restart unless-stopped --name frontend-app -p 80:80 \
               us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
-            EOF
+            DEPLOY_EOF
