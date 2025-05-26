@@ -14,21 +14,21 @@ jobs:
 
       - name: Authenticate with GCP Docker registry
         run: |
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > key.json
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key.json
           gcloud auth activate-service-account --key-file=key.json
-          gcloud auth configure-docker --quiet
+          gcloud auth configure-docker us-docker.pkg.dev --quiet
         env:
           CLOUDSDK_CORE_DISABLE_PROMPTS: '1'
 
-      - name: Build and push backend Docker image 
+      - name: Build and push backend Docker image
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend ./kitsup-backend
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend
- 
-      - name: Build and push frontend Docker image  
+          docker build -t us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend ./kitsup-backend
+          docker push us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
+
+      - name: Build and push frontend Docker image
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front ./kitsup-front
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front
+          docker build -t us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-front ./kitsup-front
+          docker push us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-front
 
       - name: Setup SSH
         run: |
@@ -43,10 +43,10 @@ jobs:
             cd ~/kitsquiz
 
             echo "Pulling latest backend image..."
-            docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend
+            docker pull us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
 
             echo "Pulling latest frontend image..."
-            docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front
+            docker pull us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-front
 
             echo "Stopping existing backend container (if any)..."
             docker stop backend-app || true
@@ -64,8 +64,9 @@ jobs:
               -e DB_USER=${{ secrets.DB_USER }} \
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e DB_NAME=${{ secrets.DB_NAME }} \
-              gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend
+              us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
 
             echo "Starting frontend container..."
-            docker run -d --restart unless-stopped --name frontend-app -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/kitsup-front
+            docker run -d --restart unless-stopped --name frontend-app -p 80:80 \
+              us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-front
           EOF
