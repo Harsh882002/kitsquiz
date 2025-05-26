@@ -86,6 +86,7 @@ jobs:
               -e DB_USER=${{ secrets.DB_USER }} \
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e DB_NAME=${{ secrets.DB_NAME }} \
+              -e SECRET_KEY=${{ secrets.SECRET_KEY }} \  
               us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
 
             echo "Starting frontend container..."
