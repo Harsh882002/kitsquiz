@@ -12,9 +12,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Authenticate with GCP Artifact Registry
+     -  name: Authenticate with GCP Artifact Registry
         run: |
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key.json
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > key.json
           gcloud auth activate-service-account --key-file=key.json
           gcloud auth configure-docker us-docker.pkg.dev --quiet
         env:
