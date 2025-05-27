@@ -6,27 +6,46 @@ import { useNavigate } from "react-router-dom";
 import LogoutIcon from '@mui/icons-material/ExitToApp';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { useDispatch, useSelector } from 'react-redux';
+import { logoutApi } from "../../features/auth/authAPI";
 import { toast, ToastContainer } from "react-toastify";
+import { getCount, getTestData, logoutUser } from "../../features/auth/authThunks";
 import { useEffect } from "react";
-import { getCount, getTestData, logoutUser, resetLogoutState } from "../../features/auth/authThunks";
-import "react-toastify/dist/ReactToastify.css";
+import { useState } from "react";
+
 
 const SuperAdmin = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const token = localStorage.getItem("token");
 
+  if (!user || !user.profile) {
+    return <Typography textAlign="center" mt={5}>User not found</Typography>;
+  }
+
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+
   const { count: resultCount, test: testData, isLoading, error, isLogoutSuccess } = useSelector(state => state.auth);
+
+  console.log(testData)
 
   useEffect(() => {
     if (token) {
       dispatch(getCount({ token }));
-      dispatch(getTestData({ token }));
+      dispatch(getTestData({ token }))
     }
   }, [token, dispatch]);
 
+  const handleRedirectToInstitute = () => {
+    navigate("/addinstitute");
+  };
+
+  const handleRedirectToTeacher = () => {
+    navigate("/addteacher"); // Change route to the correct path
+  };
+
+// Handle logout success
   useEffect(() => {
     if (isLogoutSuccess) {
       toast.success("Logout Successful!", {
@@ -44,21 +63,11 @@ const SuperAdmin = () => {
     dispatch(logoutUser());
   };
 
-  const handleRedirectToInstitute = () => {
-    navigate("/addinstitute");
-  };
+  if (!resultCount) return <Typography textAlign="center" mt={5}>Loading stats...</Typography>;
 
-  const handleRedirectToTeacher = () => {
-    navigate("/addteacher");
-  };
-
-  if (!user || !user.profile) {
-    return <Typography textAlign="center" mt={5}>User not found</Typography>;
-  }
 
   if (isLoading) return <Typography textAlign="center" mt={5}>Loading...</Typography>;
   if (error) return <Typography color="error" textAlign="center" mt={5}>{error}</Typography>;
-  if (!resultCount) return <Typography textAlign="center" mt={5}>Loading stats...</Typography>;
 
   return (
     <>
@@ -68,11 +77,11 @@ const SuperAdmin = () => {
       <Box
         sx={{
           display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          alignItems: { xs: 'flex-start', sm: 'center' },
+          flexWrap: 'wrap',
+          alignItems: 'center',
           justifyContent: 'space-between',
           px: { xs: 2, sm: 6 },
-          mt: { xs: 3, sm: 6 },
+          mt: { xs: 4, sm: 6 },
           gap: 2,
           boxShadow: 3,
           borderRadius: 2,
@@ -85,22 +94,26 @@ const SuperAdmin = () => {
           sx={{
             fontWeight: 'bold',
             color: 'primary.main',
-            fontSize: { xs: '1.3rem', sm: '2rem' },
+            textShadow: '1px 1px 3px rgba(0,0,0,0.3)',
+            fontSize: { xs: '1.6rem', sm: '2rem' },
             flex: 1,
-            letterSpacing: 1,
+            letterSpacing: 1.5,
           }}
         >
           👋 Welcome, {user.profile.name}
         </Typography>
 
+        {/* Button Group */}
         <Box
           sx={{
             display: 'flex',
-            gap: 1.5,
+            gap: 2,
+            flexShrink: 0,
             flexWrap: 'wrap',
-            justifyContent: { xs: 'center', sm: 'flex-end' },
+            justifyContent: 'flex-end',
             width: '100%',
-            mt: { xs: 2, sm: 0 },
+            marginTop: { xs: 2, sm: 0 },
+            alignItems: 'center',
           }}
         >
           <Button
@@ -109,9 +122,11 @@ const SuperAdmin = () => {
             startIcon={<AddBoxIcon />}
             onClick={handleRedirectToInstitute}
             sx={{
-              borderRadius: 2,
-              px: 2,
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              borderRadius: 3,
+              padding: '8px 20px',
+              '&:hover': {
+                backgroundColor: 'secondary.dark',
+              },
             }}
           >
             Add Institute
@@ -122,9 +137,11 @@ const SuperAdmin = () => {
             startIcon={<AddBoxIcon />}
             onClick={handleRedirectToTeacher}
             sx={{
-              borderRadius: 2,
-              px: 2,
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              borderRadius: 3,
+              padding: '8px 20px',
+              '&:hover': {
+                backgroundColor: 'primary.dark',
+              },
             }}
           >
             Add Teacher
@@ -135,9 +152,11 @@ const SuperAdmin = () => {
             startIcon={<LogoutIcon />}
             onClick={handleLogout}
             sx={{
-              borderRadius: 2,
-              px: 2,
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              borderRadius: 3,
+              padding: '8px 20px',
+              '&:hover': {
+                backgroundColor: 'error.dark',
+              },
             }}
           >
             Logout
@@ -146,16 +165,17 @@ const SuperAdmin = () => {
       </Box>
 
       {/* Main Content */}
-      <Box sx={{ mt: 3, px: { xs: 2, sm: 6 }, py: 3 }}>
-        <Box sx={{ mb: 4 }}>
+      <Box sx={{ mt: 3, paddingX: { xs: 2, sm: 6 }, paddingY: 3 }}>
+        <Box sx={{ mb: 4 }}> {/* Added margin-bottom to give spacing between sections */}
           <DashboardStats resultCount={resultCount} />
         </Box>
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 4 }}> {/* Added margin-bottom to give spacing between sections */}
           <RecentQuizzes testData={testData} />
         </Box>
-      </Box>
 
+      </Box>
       <ToastContainer />
+
     </>
   );
 };
