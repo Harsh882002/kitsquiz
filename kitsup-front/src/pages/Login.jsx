@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, TextField, Typography, useMediaQuery } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -9,43 +9,32 @@ import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { user, isLoading, isError, error, isAuthenticated } = useSelector((state) => state.auth);
-    const [hasShownSuccess, setHasShownSuccess] = useState(false);
+    const { isLoading, isError, error, isAuthenticated } = useSelector((state) => state.auth);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const isMobile = useMediaQuery('(max-width:600px)');
 
-
-     useEffect(() => {
+    useEffect(() => {
         const isLoggedIn = localStorage.getItem('token');
         if (isLoggedIn) {
-            window.location.replace("/dashboard")
+            window.location.replace("/dashboard");
         }
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            toast.success("Login Successful!", { autoClose: 2000 });
+            const timer = setTimeout(() => navigate('/dashboard'), 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-         
         dispatch(loginUser({ email, password }));
     };
 
-
-    useEffect(() => {
-        // Check if we need to redirect (only runs once after successful auth)
-
-        if (isAuthenticated) {
-            console.log("isAuthenticated", isAuthenticated)
-            toast.success("Login Successful!", { autoClose: 2000 });
-
-            const timer = setTimeout(() => {
-                navigate('/dashboard');
-            }, 2000);
-
-            return () => clearTimeout(timer);
-        }
-
-    }, [isAuthenticated, navigate]);
     return (
         <Box
             sx={{
@@ -53,7 +42,7 @@ const Login = () => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: '#f0f0f0',
+                backgroundColor: '#e8f0fe',
                 p: 2,
             }}
         >
@@ -62,23 +51,24 @@ const Login = () => {
                     display: 'flex',
                     flexDirection: { xs: 'column', sm: 'row' },
                     alignItems: 'center',
-                    backgroundColor: 'white',
-                    boxShadow: 3,
-                    borderRadius: 2,
+                    backgroundColor: '#ffffff',
+                    boxShadow: 4,
+                    borderRadius: 3,
                     width: '100%',
-                    maxWidth: 800,
+                    maxWidth: 900,
                     overflow: 'hidden',
                 }}
             >
-                {/* Image Section using img tag */}
+                {/* Image Section */}
                 <Box
                     sx={{
-                        width: { xs: '100%', sm: 400 },
+                        width: '100%',
+                        maxWidth: { xs: '100%', sm: 400 },
+                        p: 3,
+                        backgroundColor: '#f9f9f9',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        p: 1,
-                        backgroundColor: '#fafafa',
                     }}
                 >
                     <img
@@ -87,65 +77,78 @@ const Login = () => {
                         style={{
                             width: '100%',
                             height: 'auto',
-                            maxHeight: isMobile ? '200px' : '400px',
+                            maxHeight: '300px',
                             objectFit: 'contain',
                         }}
                     />
                 </Box>
 
-                {/* Login Form Section */}
+                {/* Form Section */}
                 <Box
                     sx={{
-                        width: { xs: '100%', sm: 300 },
-                        p: 3,
+                        width: '80%',
+                        p: 4,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
                     }}
                 >
-                    <Typography variant="h4" gutterBottom textAlign="center" color="primary">
-                        Login
+                    <Typography
+                        variant={isMobile ? 'h5' : 'h4'}
+                        textAlign="center"
+                        color="primary"
+                        fontWeight={600}
+                        mb={2}
+                    >
+                        Welcome Back
                     </Typography>
 
                     {isError && (
-                        <Typography color="error" textAlign="center">
+                        <Typography color="error" textAlign="center" mb={2}>
                             {error}
                         </Typography>
                     )}
 
-                    <form onSubmit={handleSubmit}>
+                    <Box
+                        component="form"
+                        onSubmit={handleSubmit}
+                        sx={{
+                            width: '100%',
+                            maxWidth: 350, // restrict input/form width
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                        }}
+                    >
                         <TextField
-                            fullWidth
                             label="Email"
                             type="email"
                             variant="outlined"
-                            margin="normal"
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                         <TextField
-                            fullWidth
                             label="Password"
                             type="password"
                             variant="outlined"
-                            margin="normal"
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                         <Button
-                            fullWidth
                             type="submit"
                             variant="contained"
-                            sx={{ mt: 2 }}
+                            color="primary"
+                            size="large"
                             disabled={isLoading}
                         >
                             {isLoading ? 'Logging in...' : 'Login'}
                         </Button>
-                    </form>
+                    </Box>
                 </Box>
             </Box>
-            <ToastContainer
-                position='top-center'
-            />
+            <ToastContainer position="top-center" />
         </Box>
     );
 };

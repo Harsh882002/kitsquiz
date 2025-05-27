@@ -9,12 +9,15 @@ import {
   Divider,
   Pagination,
   Button,
+  useTheme,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const RecentQuizzes = ({ testData = {} }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
   const [page, setPage] = useState(1);
+
   const quizzesPerPage = 5;
   const quizzes = testData?.data || [];
   const isArray = Array.isArray(quizzes);
@@ -27,32 +30,45 @@ const RecentQuizzes = ({ testData = {} }) => {
     setPage(value);
   };
 
-   
-
   return (
     <Box
       sx={{
-        mt: 15,
+        mt: { xs: 10, sm: 12 },
         px: 2,
         ml: { sm: '200px' },
         width: { xs: '100%', sm: 'calc(100% - 260px)' },
-        maxWidth: '900px',
+        maxWidth: '1000px',
       }}
     >
-      <Typography variant="h6" fontWeight="bold" gutterBottom>
-        Recent Quizzes
+      <Typography
+        variant="h6"
+        fontWeight="bold"
+        gutterBottom
+        sx={{ color: theme.palette.text.primary }}
+      >
+        📋 Recent Quizzes
       </Typography>
-      <Paper elevation={3} sx={{ borderRadius: 3, backgroundColor: '#f5f5f5' }}>
+
+      <Paper
+        elevation={3}
+        sx={{
+          borderRadius: 3,
+          backgroundColor: theme.palette.mode === 'dark' ? 'grey.900' : '#f9f9f9',
+          overflow: 'hidden',
+        }}
+      >
         <List>
           {isArray && currentQuizzes.length > 0 ? (
             currentQuizzes.map((quiz, index) => (
               <React.Fragment key={quiz.id}>
                 <ListItem
+                  alignItems="flex-start"
                   secondaryAction={
                     <Button
                       variant="outlined"
                       size="small"
                       onClick={() => navigate(`/dashboard/test/${quiz.testcode}`)}
+                      aria-label={`See students of ${quiz.title}`}
                     >
                       See Students
                     </Button>
@@ -60,17 +76,29 @@ const RecentQuizzes = ({ testData = {} }) => {
                 >
                   <ListItemText
                     primary={quiz.title || 'No Title'}
-                    secondary={`Date: ${new Date(
-                      quiz.created_at
-                    ).toLocaleDateString()} | Total Questions: ${quiz.questions}`}
+                    secondary={
+                      `📅 ${new Date(quiz.created_at).toLocaleDateString()} | ❓ ${quiz.questions} Questions`
+                    }
+                    primaryTypographyProps={{
+                      fontWeight: 'bold',
+                      fontSize: { xs: '0.95rem', sm: '1rem' },
+                    }}
+                    secondaryTypographyProps={{
+                      fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                      color: theme.palette.text.secondary,
+                    }}
                   />
                 </ListItem>
-                {index < currentQuizzes.length - 1 && <Divider />}
+                {index < currentQuizzes.length - 1 && <Divider component="li" />}
               </React.Fragment>
             ))
           ) : (
-            <Typography variant="body2" color="textSecondary" sx={{ p: 2 }}>
-              No quizzes available
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ p: 2, textAlign: 'center' }}
+            >
+              No quizzes available.
             </Typography>
           )}
         </List>
@@ -83,6 +111,9 @@ const RecentQuizzes = ({ testData = {} }) => {
             page={page}
             onChange={handlePageChange}
             color="primary"
+            siblingCount={0}
+            size="small"
+            aria-label="Quiz pagination"
           />
         </Box>
       )}
