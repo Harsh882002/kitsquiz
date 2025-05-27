@@ -126,6 +126,7 @@ const authSlice = createSlice({
         state.error = "";
       })
       .addCase(quizUpload.fulfilled, (state, action) => {
+        console.log("QUIZ UPLOAD SUCCESS:", action.payload);
         state.isLoading = false;
         state.uploadResult = action.payload;
       })

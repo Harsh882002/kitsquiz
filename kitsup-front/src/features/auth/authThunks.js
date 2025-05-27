@@ -109,7 +109,7 @@ export const studentData = createAsyncThunk(
     try {
       const response = await studentApi(studentData, token); // Simplified
       console.log("API Response:", response.data); // ✅ Must contain { token: "..." }
-      return response;
+      return response ;
     } catch (err) {
       return rejectWithValue(
         err?.response?.data?.message || "Student Add Failed"

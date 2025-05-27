@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 const CopyTextButton = () => {
   const [message, setMessage] = useState('');
+  const [isHovered, setIsHovered] = useState(false);
 
   const copyToClipboard = () => {
     const textToCopy = JSON.stringify([
@@ -27,12 +28,15 @@ const CopyTextButton = () => {
       }
     ]);
 
-    navigator.clipboard.writeText(textToCopy)
-      .then(() => setMessage('✅ Text copied to clipboard!'))
-      .catch(() => setMessage('❌ Failed to copy text.'));
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(textToCopy)
+        .then(() => setMessage('✅ Text copied to clipboard!'))
+        .catch(() => setMessage('❌ Failed to copy text.'));
+    } else {
+      setMessage('⚠️ Clipboard API not available. Please use HTTPS or localhost.');
+    }
   };
 
-  // Styles object for easy customization
   const styles = {
     container: {
       maxWidth: '500px',
@@ -51,7 +55,7 @@ const CopyTextButton = () => {
       fontWeight: '600',
       fontSize: '14px',
       minHeight: '24px',
-      color: message.includes('Failed') ? '#d9534f' : '#28a745',
+      color: message.includes('Failed') || message.includes('not available') ? '#d9534f' : '#28a745',
     },
     button: {
       cursor: 'pointer',
@@ -83,9 +87,6 @@ const CopyTextButton = () => {
       lineHeight: '1.7',
     }
   };
-
-  // For button hover effect
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div style={styles.container}>
