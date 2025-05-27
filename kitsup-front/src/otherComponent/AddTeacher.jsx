@@ -20,8 +20,8 @@ const AddTeacherForm = () => {
   const { isLoading, isError, error, isRegister } = useSelector(state => state.auth);
   const navigate = useNavigate();
 
-   const user = JSON.parse(localStorage.getItem('user'));
- 
+  const user = JSON.parse(localStorage.getItem('user'));
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -31,12 +31,12 @@ const AddTeacherForm = () => {
     employeeId: '',
     password: '',
     role: 'teachers',
-  institute_id:user.profile.id,
+    institute_id: user.profile.id,
   });
 
   console.log(formData)
 
- 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -71,7 +71,7 @@ const AddTeacherForm = () => {
         navigate("/dashboard");
       }, 2500)
     }
-   }, [isRegister, navigate]);
+  }, [isRegister, navigate]);
 
 
   return (

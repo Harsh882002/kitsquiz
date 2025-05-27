@@ -37,6 +37,7 @@ export const uploadQuiz = async (req, res) => {
 
     // Generate unique test code
     const testCode = nanoid(10);
+    console.log("testcode" , testCode)
 
     // Insert into `tests` table
     const [testResult] = await connection.execute(

@@ -11,7 +11,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({ 
-  origin: '*',
+  origin: 'http://34.93.5.179',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));

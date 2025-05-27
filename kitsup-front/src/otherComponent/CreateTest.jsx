@@ -41,7 +41,6 @@ const CreateTestForm = () => {
     const [testLink, setTestLink] = useState('');
     const [copySuccess, setCopySuccess] = useState(false);
 
-    console.log("Forma: ", formData)
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -111,9 +110,15 @@ const CreateTestForm = () => {
 
             setLoading(true);
             const result = await dispatch(quizUpload({ quizUploadData: payload, token })).unwrap();
+            console.log("Upload result:", result);
+
+            if (!result || !result.testCode) {
+                throw new Error("Upload succeeded but test code was not returned.");
+            }
 
             const generatedLink = `${window.location.origin}/test/${result.testCode}`;
             setTestLink(generatedLink);
+
 
             // Reset form but keep some values
             setFormData(prev => ({
@@ -194,7 +199,7 @@ const CreateTestForm = () => {
                             />
                         </LocalizationProvider>
 
-                        <CopyTextButton                        />
+                        <CopyTextButton />
                         <TextField
                             fullWidth
                             label="Paste Questions (JSON)"

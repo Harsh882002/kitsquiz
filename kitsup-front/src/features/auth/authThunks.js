@@ -77,7 +77,7 @@ export const quizUpload = createAsyncThunk(
   async ({ quizUploadData, token }, { rejectWithValue }) => {
     try {
       const response = await quizUploadApi(quizUploadData, token);
-      return response.data;
+      return response;
     } catch (err) {
       return rejectWithValue(
         err?.response?.data?.message || "Quiz Upload failed"
@@ -109,7 +109,7 @@ export const studentData = createAsyncThunk(
     try {
       const response = await studentApi(studentData, token); // Simplified
       console.log("API Response:", response.data); // ✅ Must contain { token: "..." }
-      return response.data;
+      return response;
     } catch (err) {
       return rejectWithValue(
         err?.response?.data?.message || "Student Add Failed"
