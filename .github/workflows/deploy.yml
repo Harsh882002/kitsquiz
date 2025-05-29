@@ -66,6 +66,11 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'DEPLOY_EOF'
           set -e
 
+          echo "🔐 Authenticating Docker with Artifact Registry..."
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key.json
+          gcloud auth activate-service-account --key-file=key.json
+          gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
+
           echo "📁 Navigating to deployment folder..."
           cd ~/kitsquiz 
 
