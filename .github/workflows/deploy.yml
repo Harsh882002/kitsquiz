@@ -90,7 +90,7 @@ jobs:
           echo "Starting backend container..."
           docker run -d --restart unless-stopped --name backend-app \
             -p 8080:8080 \
-            -e DB_HOST=${{ secrets.DB_HOST }} \
+            -e DB_HOST=host.docker.internal \
             -e DB_PORT=${{ secrets.DB_PORT }} \
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
@@ -103,5 +103,5 @@ jobs:
           docker run -d --restart unless-stopped --name frontend-app -p 80:80 \
             asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
 
-          rm ~/key.json
+          rm $HOME/key.json
           DEPLOY_EOF
