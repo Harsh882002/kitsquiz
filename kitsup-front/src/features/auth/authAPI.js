@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = 'http://35.244.22.133:8080/api/auth';
+const BASE_URL = 'http://35.244.22.133:8080/api/auth/';
 
 // const BASE_URL = "http://localhost:8080/api/auth"; 
  
