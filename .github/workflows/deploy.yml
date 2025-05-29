@@ -34,13 +34,13 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/gcp_key
-          chmod 600 ~/.ssh/gcp_key
+          echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.GCP_VM_IP }} >> ~/.ssh/known_hosts
 
       - name: Verify Docker on VM
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/gcp_key ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'DOCKER_CHECK'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'DOCKER_CHECK'
           set -e
           if ! command -v docker &> /dev/null; then
             echo "Installing Docker..."
@@ -63,7 +63,7 @@ jobs:
 
       - name: Deploy containers on GCP VM
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/gcp_key ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'DEPLOY_EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'DEPLOY_EOF'
           set -e
 
           echo "📁 Navigating to deployment folder..."
