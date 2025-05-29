@@ -62,34 +62,35 @@ jobs:
 
       - name: Deploy containers on GCP VM
         run: |
-            ssh -o StrictHostKeyChecking=no -i ~/.ssh/gcp_key ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'DEPLOY_EOF'
-            set -e
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/gcp_key ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'DEPLOY_EOF'
+          set -e
 
-            echo "📁 Navigating to deployment folder..."
-            cd ~/kitsquiz 
+          echo "📁 Navigating to deployment folder..."
+          cd ~/kitsquiz 
 
-            echo "🔄 Pulling latest backend image..."
-            docker pull us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
+          echo "🔄 Pulling latest backend image..."
+          docker pull us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
 
-            echo "🔄 Pulling latest frontend image..."
-            docker pull us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
+          echo "🔄 Pulling latest frontend image..."
+          docker pull us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
 
-            echo "🛑 Stopping existing containers (if any)..."
-            docker stop backend-app || true && docker rm backend-app || true
-            docker stop frontend-app || true && docker rm frontend-app || true
+          echo "🛑 Stopping existing containers (if any)..."
+          docker stop backend-app || true && docker rm backend-app || true
+          docker stop frontend-app || true && docker rm frontend-app || true
 
-            echo "Starting backend container..."
-            docker run -d --restart unless-stopped --name backend-app \
-              -p 8080:8080 \
-              -e DB_HOST=${{ secrets.DB_HOST }} \
-              -e DB_PORT=${{ secrets.DB_PORT }} \
-              -e DB_USER=${{ secrets.DB_USER }} \
-              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e DB_NAME=${{ secrets.DB_NAME }} \
-              -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-              us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
+          echo "Starting backend container..."
+          docker run -d --restart unless-stopped --name backend-app \
+            -p 8080:8080 \
+            -e DB_HOST=${{ secrets.DB_HOST }} \
+            -e DB_PORT=${{ secrets.DB_PORT }} \
+            -e DB_USER=${{ secrets.DB_USER }} \
+            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            -e DB_NAME=${{ secrets.DB_NAME }} \
+            -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+            -e USE_LOCAL_DB=${{ secrets.USE_LOCAL_DB }} \
+            us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
 
-            echo "Starting frontend container..."
-            docker run -d --restart unless-stopped --name frontend-app -p 80:80 \
-              us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
-            DEPLOY_EOF
+          echo "Starting frontend container..."
+          docker run -d --restart unless-stopped --name frontend-app -p 80:80 \
+            us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
+          DEPLOY_EOF
