@@ -14,21 +14,22 @@ jobs:
 
       - name: Authenticate with GCP Artifact Registry
         run: |
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > key.json
-          gcloud auth activate-service-account --key-file=key.json
-          gcloud auth configure-docker us-docker.pkg.dev --quiet
+               echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > key.json
+               gcloud auth activate-service-account --key-file=key.json
+               gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
         env:
           CLOUDSDK_CORE_DISABLE_PROMPTS: '1'
 
       - name: Build and push backend Docker image 
         run: |
-          docker build -t us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend ./kitsup-backend
-          docker push us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
+              docker build -t asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend ./kitsup-backend
+              docker push asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
 
       - name: Build and push frontend Docker image  
         run: |
-          docker build -t us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front ./kitsup-front
-          docker push us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
+              docker build -t asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front ./kitsup-front
+              docker push asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
+
 
       - name: Setup SSH
         run: |
