@@ -70,10 +70,10 @@ jobs:
           cd ~/kitsquiz 
 
           echo "🔄 Pulling latest backend image..."
-          docker pull us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
+          docker pull asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
 
           echo "🔄 Pulling latest frontend image..."
-          docker pull us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
+          docker pull asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
 
           echo "🛑 Stopping existing containers (if any)..."
           docker stop backend-app || true && docker rm backend-app || true
@@ -89,9 +89,9 @@ jobs:
             -e DB_NAME=${{ secrets.DB_NAME }} \
             -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
             -e USE_LOCAL_DB=${{ secrets.USE_LOCAL_DB }} \
-            us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
+            asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
 
           echo "Starting frontend container..."
           docker run -d --restart unless-stopped --name frontend-app -p 80:80 \
-            us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
+            asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
           DEPLOY_EOF
