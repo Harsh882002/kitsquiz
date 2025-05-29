@@ -12,24 +12,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Authenticate with GCP Artifact Registry
+      - name: Authenticate with GCP Artifact Registry (local)
         run: |
-               echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > key.json
-               gcloud auth activate-service-account --key-file=key.json
-               gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > key.json
+          gcloud auth activate-service-account --key-file=key.json
+          gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
         env:
           CLOUDSDK_CORE_DISABLE_PROMPTS: '1'
 
-      - name: Build and push backend Docker image 
+      - name: Build and push backend Docker image
         run: |
-              docker build -t asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend ./kitsup-backend
-              docker push asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
+          docker build -t asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend ./kitsup-backend
+          docker push asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
 
-      - name: Build and push frontend Docker image  
+      - name: Build and push frontend Docker image
         run: |
-              docker build -t asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front ./kitsup-front
-              docker push asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
-
+          docker build -t asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front ./kitsup-front
+          docker push asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
 
       - name: Setup SSH
         run: |
@@ -37,6 +36,11 @@ jobs:
           echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.GCP_VM_IP }} >> ~/.ssh/known_hosts
+
+      - name: Copy service account key to VM
+        run: |
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > key.json
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa key.json ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }}:~/key.json
 
       - name: Verify Docker on VM
         run: |
@@ -67,12 +71,11 @@ jobs:
           set -e
 
           echo "🔐 Authenticating Docker with Artifact Registry..."
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key.json
-          gcloud auth activate-service-account --key-file=key.json
+          gcloud auth activate-service-account --key-file=~/key.json
           gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
 
           echo "📁 Navigating to deployment folder..."
-          cd ~/kitsquiz 
+          cd ~/kitsquiz
 
           echo "🔄 Pulling latest backend image..."
           docker pull asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
@@ -99,4 +102,6 @@ jobs:
           echo "Starting frontend container..."
           docker run -d --restart unless-stopped --name frontend-app -p 80:80 \
             asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
+
+          rm ~/key.json
           DEPLOY_EOF
