@@ -71,7 +71,7 @@ jobs:
           set -e
 
           echo "🔐 Authenticating Docker with Artifact Registry..."
-          gcloud auth activate-service-account --key-file=~/key.json
+          gcloud auth activate-service-account --key-file=$HOME/key.json
           gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
 
           echo "📁 Navigating to deployment folder..."
