@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Authenticate with GCP Artifact Registry (local)
+      - name: Authenticate with GCP Artifact Registry
         run: |
           echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > key.json
           gcloud auth activate-service-account --key-file=key.json
@@ -44,7 +44,7 @@ jobs:
 
       - name: Verify Docker on VM
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'DOCKER_CHECK'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'EOF'
           set -e
           if ! command -v docker &> /dev/null; then
             echo "Installing Docker..."
@@ -63,11 +63,11 @@ jobs:
             sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
             sudo usermod -aG docker $USER
           fi
-          DOCKER_CHECK
+          EOF
 
       - name: Deploy containers on GCP VM
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'DEPLOY_EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'EOF'
           set -e
 
           echo "🔐 Authenticating Docker with Artifact Registry..."
@@ -83,25 +83,29 @@ jobs:
           echo "🔄 Pulling latest frontend image..."
           docker pull asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
 
-          echo "🛑 Stopping existing containers (if any)..."
-          docker stop backend-app || true && docker rm backend-app || true
-          docker stop frontend-app || true && docker rm frontend-app || true
+          echo "🛑 Stopping existing backend container (if any)..."
+          docker stop backend-app || true
+          docker rm backend-app || true
 
-          echo "Starting backend container..."
+          echo "🛑 Stopping existing frontend container (if any)..."
+          docker stop frontend-app || true
+          docker rm frontend-app || true
+
+          echo "🚀 Starting backend container..."
           docker run -d --restart unless-stopped --name backend-app \
             -p 8080:8080 \
-            -e DB_HOST=${{ secrets.DB_HOST }} \
-            -e DB_PORT=${{ secrets.DB_PORT }} \
-            -e DB_USER=${{ secrets.DB_USER }} \
-            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            -e DB_NAME=${{ secrets.DB_NAME }} \
-            -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-            -e USE_LOCAL_DB=${{ secrets.USE_LOCAL_DB }} \
+            -e DB_HOST='${{ secrets.DB_HOST }}' \
+            -e DB_PORT='${{ secrets.DB_PORT }}' \
+            -e DB_USER='${{ secrets.DB_USER }}' \
+            -e DB_PASSWORD='${{ secrets.DB_PASSWORD }}' \
+            -e DB_NAME='${{ secrets.DB_NAME }}' \
+            -e SECRET_KEY='${{ secrets.SECRET_KEY }}' \
+            -e USE_LOCAL_DB='${{ secrets.USE_LOCAL_DB }}' \
             asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-backend/kitsup-backend
 
-          echo "Starting frontend container..."
+          echo "🚀 Starting frontend container..."
           docker run -d --restart unless-stopped --name frontend-app -p 80:80 \
             asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kitsup-frontend/kitsup-front
 
           rm $HOME/key.json
-          DEPLOY_EOF
+          EOF
