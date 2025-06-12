@@ -19,7 +19,7 @@ const RecentQuizzes = ({ testData = {} }) => {
   const [page, setPage] = useState(1);
 
   const quizzesPerPage = 5;
-  const quizzes = testData?.data || [];
+const quizzes = (testData?.data || []).slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   const isArray = Array.isArray(quizzes);
 
   const indexOfLastQuiz = page * quizzesPerPage;
