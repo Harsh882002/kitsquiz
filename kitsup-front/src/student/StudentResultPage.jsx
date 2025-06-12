@@ -5,10 +5,12 @@ import {
     Paper,
     Divider,
     Grid,
-    CircularProgress
+    CircularProgress,
+    Button
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { getResult, resetResult } from '../features/auth/authThunks';
+import { useNavigate } from 'react-router-dom';
 
 const StudentResultPage = () => {
     const dispatch = useDispatch();
@@ -18,7 +20,7 @@ const StudentResultPage = () => {
     const [showResult, setShowResult] = useState(false);
 
     const { currentTest: resultData, isLoading, error } = useSelector(state => state.auth);
-
+const navigate = useNavigate();
     // Load user and token
     useEffect(() => {
         dispatch(resetResult());
@@ -114,6 +116,15 @@ const StudentResultPage = () => {
 
                 <Divider sx={{ my: 3 }} />
 
+                <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ mt: 3 }}
+                    onClick={() => navigate(`/leaderboard/${resultData.student?.test_id}`)}
+                >
+                    See Leaderboard
+                </Button>
+
                 {/* <Typography variant="body1" color="text.secondary" mb={2}>
                     {resultData.remarks || "No remarks provided."}
                 </Typography> */}
@@ -122,8 +133,8 @@ const StudentResultPage = () => {
                     You can leave this page.
                 </Typography>
                 <Typography variant="h6" color="secondary" mt={2} fontWeight="bold">
-                    Thank you!              
-                      </Typography>
+                    Thank you!
+                </Typography>
 
             </Paper>
         </Box>

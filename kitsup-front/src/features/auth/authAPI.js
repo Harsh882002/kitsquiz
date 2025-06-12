@@ -172,3 +172,25 @@ export const fetchTestCount = async (user_id) => {
     throw error;
   }
 };
+
+export const deleteTestApi = async(id) =>{
+  try{
+    const response = await axios.delete(`${BASE_URL}/tests/${id}`)
+    return id;
+  }catch(error){
+    console.error("delete test failed:", error);
+    throw error;
+  }
+}
+
+
+export const leaderBoardApi = async(id) =>{
+  try{
+    const response = await axios.get(`${BASE_URL}/leaderboard/${id}`);
+    return response.data;
+  }
+  catch(error){
+    console.error("failed to show leaderboard", error);
+    throw error;
+  }
+}

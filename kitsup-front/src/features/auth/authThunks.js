@@ -4,6 +4,7 @@ import {
   isRejectedWithValue,
 } from "@reduxjs/toolkit";
 import {
+  deleteTestApi,
   fetchStudentsByTestcodeAPI,
   fetchTestCount,
   getAllTestApi,
@@ -12,6 +13,7 @@ import {
   getResultApi,
   getTeacherTestApi,
   getTestByCodeApi,
+  leaderBoardApi,
   loginApi,
   logoutApi,
   quizUploadApi,
@@ -109,7 +111,7 @@ export const studentData = createAsyncThunk(
     try {
       const response = await studentApi(studentData, token); // Simplified
       console.log("API Response:", response.data); // ✅ Must contain { token: "..." }
-      return response ;
+      return response;
     } catch (err) {
       return rejectWithValue(
         err?.response?.data?.message || "Student Add Failed"
@@ -196,32 +198,55 @@ export const getTeacherTests = createAsyncThunk(
   }
 );
 
-
-
 //GET ALL students BY testcode
 export const fetchStudentsByTestcode = createAsyncThunk(
-  'auth/fetchStudentsByTestcode',
+  "auth/fetchStudentsByTestcode",
   async (testcode, thunkAPI) => {
     try {
       const data = await fetchStudentsByTestcodeAPI(testcode);
       return data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || 'Unknown error');
+      return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
     }
   }
 );
 
 //getting test count
 
-
 export const getTestCount = createAsyncThunk(
-  'auth/getTestCount',
+  "auth/getTestCount",
   async ({ user_id }, { rejectWithValue }) => {
     try {
       const data = await fetchTestCount(user_id);
       return data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Something went wrong');
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+
+export const deleteTest = createAsyncThunk(
+  "auth/deleteTest",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const data = await deleteTestApi(id);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+
+export const getLeaderBoard = createAsyncThunk(
+  "auth/getLeaderboard",
+  async (testId, { rejectWithValue }) => {
+    try {
+      const data = await leaderBoardApi(testId);
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Leaderboard fetch failed"
+      );
     }
   }
 );

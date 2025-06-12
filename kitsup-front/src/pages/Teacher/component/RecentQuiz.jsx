@@ -8,14 +8,50 @@ import {
   Button,
   Box,
 } from '@mui/material';
+import { useNavigate } from 'react-router';
+import Swal from 'sweetalert2'; 
 
-import { useNavigate } from 'react-router-dom';
-
-const RecentQuiz = ({ tests }) => {
+// Redux
+import { useDispatch } from 'react-redux';
+import { deleteTest } from '../../../features/auth/authThunks';
+ 
+const RecentQuiz = ({ tests, onDeleteSuccess }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+ 
+  const handleDelete = async (id) => {
+    console.log("idd",id)
+    const confirm = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You want to delete this quiz?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        await dispatch(deleteTest({ id })).unwrap(); // .unwrap throws if rejected
+        Swal.fire('Deleted!', 'Quiz has been deleted.', 'success');
+
+        // Notify parent to remove from list
+        if (onDeleteSuccess) onDeleteSuccess(id);
+      } catch (error) {
+        Swal.fire('Error!', 'Failed to delete quiz.', 'error');
+      }
+    }
+  };
 
   return (
-    <Paper sx={{ p: 3, borderRadius: 3, mt: 5, width: '100%', backgroundColor: "#f0f4f8" }}>
+    <Paper
+      sx={{
+        p: 3,
+        borderRadius: 3,
+        mt: 5,
+        width: '100%',
+        backgroundColor: '#f0f4f8',
+      }}
+    >
       <Typography variant="h6" gutterBottom>
         Recent Quizzes
       </Typography>
@@ -23,9 +59,8 @@ const RecentQuiz = ({ tests }) => {
         {tests?.data?.length > 0 ? (
           [...tests.data]
             .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-            .map((quiz, index) => (
-
-              <React.Fragment key={index}>
+            .map((quiz) => (
+              <React.Fragment key={quiz.id}>
                 <ListItem
                   alignItems="flex-start"
                   sx={{ paddingY: 2, display: 'flex', width: '100%' }}
@@ -43,13 +78,14 @@ const RecentQuiz = ({ tests }) => {
                     </Typography>
                   </Box>
 
-                  {/* Right side: Button centered */}
+                  {/* Right side: Buttons */}
                   <Box
                     sx={{
                       width: '50%',
                       display: 'flex',
                       justifyContent: 'center',
                       alignItems: 'center',
+                      gap: 2,
                     }}
                   >
                     <Button
@@ -57,17 +93,30 @@ const RecentQuiz = ({ tests }) => {
                       size="small"
                       color="primary"
                       sx={{
-                        paddingX: 3,   // horizontal padding
-                        paddingY: 1.5, // vertical padding
-                        fontSize: '1.1rem'  // increase font size
+                        paddingX: 2,
+                        paddingY: 1,
+                        fontSize: '0.9rem',
                       }}
                       onClick={() => navigate(`/dashboard/test/${quiz.testcode}`)}
                     >
                       See Students
                     </Button>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      color="error"
+                      sx={{
+                        paddingX: 2,
+                        paddingY: 1,
+                        fontSize: '0.9rem',
+                      }}
+                      onClick={() => handleDelete(quiz.testcode)}
+                    >
+                      Delete
+                    </Button>
                   </Box>
                 </ListItem>
-                {index < tests.data.length - 1 && <Divider />}
+                <Divider />
               </React.Fragment>
             ))
         ) : (

@@ -14,6 +14,7 @@ import TestPage from '../student/StudentTestPage'
 import StudentResultPage from '../student/StudentResultPage'
 import InstructionsPage from '../student/StudentInstruction'
 import StudentList from '../pages/Teacher/component/StudentList'
+import LeaderBoardPage from '../student/LeaderBoard'
 
 const RoutingComponent = () => {
     return (
@@ -136,6 +137,13 @@ const RoutingComponent = () => {
                     </ProtectedRoute>
                 }
             />
+
+            <Route 
+        path='/leaderboard/:testId'
+        element={
+            <LeaderBoardPage />
+        }
+           />
         </Routes>
 
     )

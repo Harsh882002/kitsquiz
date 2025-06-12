@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, CircularProgress } from '@mui/material';
 import TeacherProfile from './component/TeacherProfile';
 import StatsCard from './component/StatsCard';
@@ -12,19 +12,20 @@ const Teacher = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { test: tests, isLoading, error } = useSelector(state => state.auth);
-  console.log("data ", tests);
+  const { test, isLoading, error } = useSelector((state) => state.auth);
+  const [testsData, setTestsData] = useState({ data: [] });
 
   const user = JSON.parse(localStorage.getItem('user'));
   const user_id = user?.id;
 
+  // Fetch tests on mount
   useEffect(() => {
     const fetchTests = async () => {
       try {
-        await dispatch(getTeacherTests({ user_id })).unwrap();
+        const response = await dispatch(getTeacherTests({ user_id })).unwrap();
+        setTestsData(response); // Set fetched data in local state
       } catch (error) {
         console.error("Error fetching teacher tests:", error);
-        
       }
     };
 
@@ -34,13 +35,8 @@ const Teacher = () => {
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser());
-      toast.success("Logout successful!", {
-        autoClose: 2000,
-      });
-
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
+      toast.success("Logout successful!", { autoClose: 2000 });
+      setTimeout(() => navigate("/"), 2000);
     } catch (error) {
       toast.error("Logout failed!");
     }
@@ -50,9 +46,17 @@ const Teacher = () => {
     navigate("/createtest");
   };
 
+  // 👇 Callback to remove deleted quiz from UI
+  const handleDeleteSuccess = (deletedId) => {
+    setTestsData((prev) => ({
+      ...prev,
+      data: prev.data.filter((quiz) => quiz.id !== deletedId),
+    }));
+  };
+
   return (
     <Box sx={{ px: { xs: 2, md: 6 }, py: 4, ml: { md: '50px' } }}>
-      {/* Top Bar: Responsive */}
+      {/* Top Bar */}
       <Box
         display="flex"
         flexDirection={{ xs: 'column', md: 'row' }}
@@ -62,7 +66,6 @@ const Teacher = () => {
         gap={2}
       >
         <Typography variant="h4" fontWeight="bold">Teacher Dashboard</Typography>
-
         <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} width={{ xs: '100%', sm: 'auto' }}>
           <Button variant="contained" color="primary" fullWidth onClick={handleRedirect}>
             Create Test
@@ -73,22 +76,22 @@ const Teacher = () => {
         </Box>
       </Box>
 
-      {/* Profile Section */}
+      {/* Profile */}
       <Box mb={4}>
         <TeacherProfile />
       </Box>
 
-      {/* Stats Section */}
+      {/* Stats */}
       <Box mb={4}>
         <StatsCard />
       </Box>
 
-      {/* Recent Quizzes or Loader */}
+      {/* Recent Quizzes */}
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
         {isLoading ? (
           <CircularProgress size={50} color="primary" />
         ) : (
-          <RecentQuiz tests={tests} />
+          <RecentQuiz tests={testsData} onDeleteSuccess={handleDeleteSuccess} />
         )}
       </Box>
 

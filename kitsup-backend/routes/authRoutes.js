@@ -15,6 +15,8 @@ import authMiddleware from '../middleware/auth.js';
 import { fetchTeacherTests } from '../test/fetchTeacherTests.js';
 import { studentList } from '../student/studentList.js';
 import { countTests } from '../teachers/countTests.js';
+import { deleteTest } from '../test/deleteTests.js';
+import { getLeaderBoard } from '../student/leaderboard.js';
 
 const app = express();
 
@@ -33,5 +35,6 @@ app.get('/getalltest', getAllTests);
 app.post('/getalltest', fetchTeacherTests);
 app.get('/getstudents/:testcode', studentList);
 app.get('/testcount/:user_id', countTests);
-
+app.delete('/tests/:id',deleteTest);
+app.get('/leaderboard/:test',getLeaderBoard)
 export default app;

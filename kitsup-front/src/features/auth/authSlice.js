@@ -3,8 +3,10 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import {
+  deleteTest,
   fetchStudentsByTestcode,
   getCount,
+  getLeaderBoard,
   getResult,
   getTeacherTests,
   getTestByCode,
@@ -272,6 +274,41 @@ const authSlice = createSlice({
         state.testCount = action.payload.count;
       })
       .addCase(getTestCount.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    builder
+      .addCase(deleteTest.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteTest.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const deletedId = action.payload;
+
+        if (deletedId && state.tests?.data) {
+          state.tests.data = state.tests.data.filter(
+            (test) => test.id !== deletedId
+          );
+        }
+      })
+      .addCase(deleteTest.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    //LearderBoard API
+    builder
+      .addCase(getLeaderBoard.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getLeaderBoard.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.leaderboard = action.payload;
+      })
+      .addCase(getLeaderBoard.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
