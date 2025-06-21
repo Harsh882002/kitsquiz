@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: backend-app
+    env: docker
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    plan: free
+    autoDeploy: true
+    branch: main
+    envVars:
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: USE_LOCAL_DB
+        sync: false
+
+  - type: web
+    name: frontend-app
+    env: docker
+    dockerContext: ./frontend
+    dockerfilePath: ./frontend/Dockerfile
+    plan: free
+    autoDeploy: true
+    branch: main
