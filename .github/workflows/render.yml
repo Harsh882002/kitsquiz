@@ -2,8 +2,8 @@ services:
   - type: web
     name: backend-app
     env: docker
-    dockerContext: ./backend
-    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./kitsup-backend
+    dockerfilePath: ./kitsup-backend/Dockerfile
     plan: free
     autoDeploy: true
     branch: main
@@ -26,8 +26,8 @@ services:
   - type: web
     name: frontend-app
     env: docker
-    dockerContext: ./frontend
-    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./kitsup-front
+    dockerfilePath: ./kitsup-front/Dockerfile
     plan: free
     autoDeploy: true
     branch: main
