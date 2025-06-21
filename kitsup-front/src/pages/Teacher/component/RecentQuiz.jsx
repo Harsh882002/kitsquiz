@@ -9,19 +9,18 @@ import {
   Box,
 } from '@mui/material';
 import { useNavigate } from 'react-router';
-import Swal from 'sweetalert2'; 
+import Swal from 'sweetalert2';
 
 // Redux
 import { useDispatch } from 'react-redux';
 import { deleteTest } from '../../../features/auth/authThunks';
- 
+
 const RecentQuiz = ({ tests, onDeleteSuccess }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
- 
+
   const handleDelete = async (id) => {
-    console.log("idd",id)
-    const confirm = await Swal.fire({
+     const confirm = await Swal.fire({
       title: 'Are you sure?',
       text: 'You want to delete this quiz?',
       icon: 'warning',
@@ -101,6 +100,17 @@ const RecentQuiz = ({ tests, onDeleteSuccess }) => {
                     >
                       See Students
                     </Button>
+
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      color="secondary"
+                      sx={{ px: 2, py: 1, fontSize: '0.9rem' }}
+                      onClick={() => navigate(`/update-test/${quiz.testcode}`)}
+                    >
+                      Edit
+                    </Button>
+
                     <Button
                       variant="contained"
                       size="small"

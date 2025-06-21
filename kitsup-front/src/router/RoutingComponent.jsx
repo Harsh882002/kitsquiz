@@ -15,6 +15,7 @@ import StudentResultPage from '../student/StudentResultPage'
 import InstructionsPage from '../student/StudentInstruction'
 import StudentList from '../pages/Teacher/component/StudentList'
 import LeaderBoardPage from '../student/LeaderBoard'
+import UpdateTestForm from '../otherComponent/UpdateTest'
 
 const RoutingComponent = () => {
     return (
@@ -138,12 +139,19 @@ const RoutingComponent = () => {
                 }
             />
 
-            <Route 
-        path='/leaderboard/:testId'
-        element={
-            <LeaderBoardPage />
-        }
-           />
+            <Route
+                path='/leaderboard/:testId'
+                element={
+                    <LeaderBoardPage />
+                }
+            />
+
+            <Route
+                path='/update-test/:testcode'
+                element={
+                    <UpdateTestForm />
+                }
+            />
         </Routes>
 
     )

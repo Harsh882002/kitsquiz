@@ -20,13 +20,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getTestByCode } from '../features/auth/authThunks';
 import { resultApi } from '../features/auth/authAPI';
 
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 const TestPage = () => {
   const { testCode } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const { currentTest, loading, error } = useSelector((state) => state.auth);
 
+  const [shuffledQuestions, setShuffledQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [timeLeft, setTimeLeft] = useState(30 * 60);
@@ -34,7 +43,7 @@ const TestPage = () => {
   const [warnings, setWarnings] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [hasSubmitted, setHasSubmitted] = useState(false); // NEW: prevent multiple submissions
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const token = localStorage.getItem('token');
 
@@ -75,19 +84,24 @@ const TestPage = () => {
       navigate("/");
       return;
     }
-
     if (testCode && token) {
       dispatch(getTestByCode({ testCode, token }));
     }
   }, [testCode, token, dispatch, navigate]);
 
   useEffect(() => {
-    if (currentTest) {
+    if (currentTest && currentTest.questions) {
       const now = new Date();
       const expiryDate = new Date(currentTest.expire_at);
       setIsExpired(now > expiryDate);
       setTimeLeft(currentTest.duration * 60);
       requestFullScreen();
+
+      const shuffled = currentTest.randomize === 1
+        ? shuffleArray(currentTest.questions)
+        : currentTest.questions;
+
+      setShuffledQuestions(shuffled);
 
       const handleFullScreenChange = () => {
         if (!document.fullscreenElement) {
@@ -123,7 +137,6 @@ const TestPage = () => {
 
   useEffect(() => {
     if (isExpired || loading || !currentTest) return;
-
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -134,7 +147,6 @@ const TestPage = () => {
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(timer);
   }, [isExpired, loading, currentTest]);
 
@@ -144,15 +156,12 @@ const TestPage = () => {
   };
 
   const handleOptionChange = (questionId, option) => {
-    setSelectedOptions((prev) => ({
-      ...prev,
-      [questionId]: option
-    }));
+    setSelectedOptions((prev) => ({ ...prev, [questionId]: option }));
   };
 
   const handleNavigation = (direction) => {
     if (direction === 'next') {
-      setCurrentQuestionIndex((prev) => Math.min(prev + 1, currentTest.questions.length - 1));
+      setCurrentQuestionIndex((prev) => Math.min(prev + 1, shuffledQuestions.length - 1));
     } else {
       setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0));
     }
@@ -160,30 +169,28 @@ const TestPage = () => {
 
   const handleSubmit = async () => {
     if (!currentTest || hasSubmitted) return;
+    setHasSubmitted(true);
 
-    setHasSubmitted(true); // prevent multiple submissions
-
-    const score = currentTest.questions.reduce((acc, question) => {
+    const score = shuffledQuestions.reduce((acc, question) => {
       const correct = question.correct_answer;
       const selected = selectedOptions[question.id];
       return correct === selected ? acc + 1 : acc;
     }, 0);
 
     try {
-      const res = await resultApi(testCode, selectedOptions, score, token);
- 
+      await resultApi(testCode, selectedOptions, score, token);
       navigate(`/test/${testCode}/results`, {
         state: {
           score,
-          totalQuestions: currentTest.questions.length,
+          totalQuestions: shuffledQuestions.length,
           answers: selectedOptions,
-          questions: currentTest.questions
+          questions: shuffledQuestions
         }
       });
     } catch (err) {
       console.error("Error while submitting result:", err);
       showWarning("Failed to submit test result.");
-      setHasSubmitted(false); // allow retry if error occurred
+      setHasSubmitted(false);
     }
   };
 
@@ -192,6 +199,10 @@ const TestPage = () => {
     const secs = seconds % 60;
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
+
+  const currentQuestion = shuffledQuestions?.[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / shuffledQuestions.length) * 100;
+  const isLastQuestion = currentQuestionIndex === shuffledQuestions.length - 1;
 
   if (loading) {
     return (
@@ -226,74 +237,66 @@ const TestPage = () => {
         <Alert severity="error" sx={{ mb: 2 }}>
           This quiz expired on {new Date(currentTest.expire_at).toLocaleString()}
         </Alert>
-        <Button variant="contained" onClick={() => navigate('/')}>
-          Return to Home
-        </Button>
+        <Button variant="contained" onClick={() => navigate('/')}>Return to Home</Button>
       </Container>
     );
   }
-
-  const currentQuestion = currentTest.questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / currentTest.questions.length) * 100;
-  const isLastQuestion = currentQuestionIndex === currentTest.questions.length - 1;
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h5">{currentTest.title}</Typography>
-          <Typography variant="h6" color="primary">
-            Time Left: {formatTime(timeLeft)}
-          </Typography>
+          <Typography variant="h6" color="primary">Time Left: {formatTime(timeLeft)}</Typography>
         </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
           Valid until: {new Date(currentTest.expire_at).toLocaleString()}
         </Typography>
         <LinearProgress variant="determinate" value={progress} sx={{ height: 8, mt: 2 }} />
         <Typography variant="caption" display="block" textAlign="right" mt={1}>
-          Question {currentQuestionIndex + 1} of {currentTest.questions.length}
+          Question {currentQuestionIndex + 1} of {shuffledQuestions.length}
         </Typography>
       </Paper>
 
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            {currentQuestion.question_text}
-          </Typography>
-          <RadioGroup
-            value={selectedOptions[currentQuestion.id] || ''}
-            onChange={(e) => handleOptionChange(currentQuestion.id, e.target.value)}
-          >
-            {Object.entries(currentQuestion.options).map(([key, value]) => (
-              <FormControlLabel
-                key={key}
-                value={key}
-                control={<Radio />}
-                label={`${key.toUpperCase()}. ${value}`}
-                sx={{ mb: 1 }}
-              />
-            ))}
-          </RadioGroup>
-        </CardContent>
-      </Card>
+      {currentQuestion ? (
+        <>
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>{currentQuestion.question_text}</Typography>
+              <RadioGroup
+                value={selectedOptions[currentQuestion.id] || ''}
+                onChange={(e) => handleOptionChange(currentQuestion.id, e.target.value)}
+              >
+                {Object.entries(currentQuestion.options).map(([key, value]) => (
+                  <FormControlLabel
+                    key={key}
+                    value={key}
+                    control={<Radio />}
+                    label={`${key.toUpperCase()}. ${value}`}
+                    sx={{ mb: 1 }}
+                  />
+                ))}
+              </RadioGroup>
+            </CardContent>
+          </Card>
 
-      <Box display="flex" justifyContent="space-between">
-        <Button
-          variant="outlined"
-          onClick={() => handleNavigation('prev')}
-          disabled={currentQuestionIndex === 0}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="contained"
-          color={isLastQuestion ? 'success' : 'primary'}
-          onClick={isLastQuestion ? handleSubmit : () => handleNavigation('next')}
-          disabled={!selectedOptions[currentQuestion.id] || hasSubmitted}
-        >
-          {isLastQuestion ? 'Submit Test' : 'Next'}
-        </Button>
-      </Box>
+          <Box display="flex" justifyContent="space-between">
+            <Button
+              variant="outlined"
+              onClick={() => handleNavigation('prev')}
+              disabled={currentQuestionIndex === 0}
+            >Previous</Button>
+            <Button
+              variant="contained"
+              color={isLastQuestion ? 'success' : 'primary'}
+              onClick={isLastQuestion ? handleSubmit : () => handleNavigation('next')}
+              disabled={!selectedOptions[currentQuestion.id] || hasSubmitted}
+            >{isLastQuestion ? 'Submit Test' : 'Next'}</Button>
+          </Box>
+        </>
+      ) : (
+        <Typography variant="body1" color="textSecondary">Loading question...</Typography>
+      )}
 
       <Snackbar
         open={snackbarOpen}

@@ -15,8 +15,9 @@ export const getTestData = async (req, res) => {
       return res.status(404).json({ error: "Test Not Found" });
     } 
 
-    const test = testRows[0];
 
+    const test = testRows[0];
+console.log("test " , test)
     //Get Question For Test 
     const [questionsRows] = await db.execute(
       `SELECT * FROM test_questions WHERE test_id = ? `,

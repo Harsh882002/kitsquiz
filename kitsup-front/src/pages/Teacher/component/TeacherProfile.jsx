@@ -6,8 +6,7 @@ const TeacherProfile = () => {
 
   const user = JSON.parse(localStorage.getItem('user'));
 
-  console.log(user);
-
+ 
 
   return (
     <Paper sx={{ p: 3, borderRadius: 3, backgroundColor: '#f0f4f8' }}>

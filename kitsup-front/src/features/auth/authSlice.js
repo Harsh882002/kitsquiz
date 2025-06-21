@@ -12,6 +12,7 @@ import {
   getTestByCode,
   getTestCount,
   getTestData,
+  getTestToUpdate,
   loginUser,
   logoutUser,
   quizUpload,
@@ -19,6 +20,7 @@ import {
   resetResult,
   saveResult,
   studentData,
+  updateQuiz,
 } from "./authThunks.js";
 
 const storedUser = localStorage.getItem("user");
@@ -312,6 +314,37 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       });
+
+    //getTestUpdate
+    builder
+       .addCase(getTestToUpdate.pending,(state) =>{
+        state.isLoading = true;
+        state.error = null;
+       })
+       .addCase(getTestToUpdate.fulfilled,(state,action) =>{
+        state.isLoading = false;
+        state.testToEdit = action.payload;
+        })
+        .addCase(getTestToUpdate.rejected,(state,action) =>{
+          state.isLoading = false;
+          state.error = action.payload
+        })
+
+
+     //update quiz
+    builder 
+        .addCase(updateQuiz.pending,(state) =>{
+          state.isLoading = true;
+          state.error = null;
+        })
+        .addCase(updateQuiz.fulfilled,(state,action) => {
+          state.isLoading - true;
+          state.success = true;
+        })
+        .addCase(updateQuiz.rejected,(state,action) =>{
+          state.isLoading = false;
+          state.error =  action.payload;
+        })
   },
 });
 

@@ -17,6 +17,7 @@ import { studentList } from '../student/studentList.js';
 import { countTests } from '../teachers/countTests.js';
 import { deleteTest } from '../test/deleteTests.js';
 import { getLeaderBoard } from '../student/leaderboard.js';
+import { updateQuiz } from '../controllers/updateQuiz.js';
 
 const app = express();
 
@@ -37,4 +38,5 @@ app.get('/getstudents/:testcode', studentList);
 app.get('/testcount/:user_id', countTests);
 app.delete('/tests/:id',deleteTest);
 app.get('/leaderboard/:test',getLeaderBoard)
+app.put('/update-test/:testCode',updateQuiz);
 export default app;

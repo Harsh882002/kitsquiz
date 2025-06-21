@@ -2,10 +2,10 @@ import axios from "axios";
 
 // const BASE_URL = 'http://35.244.22.133:8080/api/auth/';
 
-const BASE_URL = "http://localhost:8080/api/auth"; 
- 
+const BASE_URL = "http://localhost:8080/api/auth";
+
 export const loginApi = (credentials) =>
-   axios.post(`${BASE_URL}/login`, credentials);
+  axios.post(`${BASE_URL}/login`, credentials);
 
 export const registerApi = (userData) =>
   axios.post(`${BASE_URL}/register`, userData);
@@ -173,24 +173,51 @@ export const fetchTestCount = async (user_id) => {
   }
 };
 
-export const deleteTestApi = async(id) =>{
-  try{
+export const deleteTestApi = async (id) => {
+  try {
     const response = await axios.delete(`${BASE_URL}/tests/${id}`)
     return id;
-  }catch(error){
+  } catch (error) {
     console.error("delete test failed:", error);
     throw error;
   }
 }
 
 
-export const leaderBoardApi = async(id) =>{
-  try{
+export const leaderBoardApi = async (id) => {
+  try {
     const response = await axios.get(`${BASE_URL}/leaderboard/${id}`);
     return response.data;
   }
-  catch(error){
+  catch (error) {
     console.error("failed to show leaderboard", error);
     throw error;
+  }
+}
+
+//get test to update test
+export const getTestToUpdateApi = async (testcode) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/test/${testcode}`)
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch api data ");
+    throw error;
+  }
+}
+
+
+
+//update test code
+export const updateQuizApi = async (testcode, payload, token) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/update-test/${testcode}`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    });
+    return response.data;
+  } catch (err) {
+    console.log("something went wrong", err);
   }
 }

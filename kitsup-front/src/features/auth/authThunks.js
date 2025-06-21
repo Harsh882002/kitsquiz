@@ -13,6 +13,7 @@ import {
   getResultApi,
   getTeacherTestApi,
   getTestByCodeApi,
+  getTestToUpdateApi,
   leaderBoardApi,
   loginApi,
   logoutApi,
@@ -20,6 +21,7 @@ import {
   registerApi,
   resultApi,
   studentApi,
+  updateQuizApi,
 } from "./authAPI.js";
 
 //LOGIN API
@@ -250,3 +252,33 @@ export const getLeaderBoard = createAsyncThunk(
     }
   }
 );
+
+export const getTestToUpdate = createAsyncThunk(
+  "auth/getTestToUpdate",
+  async(testcode,{rejectWithValue}) =>{
+    try{
+      const data = await getTestToUpdateApi(testcode);
+      return data;
+    }catch(error){
+      return rejectWithValue(
+        error.response?.data?.message || "Leaderboard fetch failed"
+      );
+    }
+  }
+)
+
+
+//update test 
+export const updateQuiz = createAsyncThunk(
+  'auth/updateQuiz',
+  async({testcode,payload,token},{rejectWithValue}) =>{
+    try{
+      const data = await updateQuizApi(testcode,payload,token);
+      return data;
+    }catch(error){
+      return rejectWithValue(
+        error.response?.data?.message || "Quiz Update Failed"
+      )
+    }
+  }
+)
