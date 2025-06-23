@@ -12,6 +12,7 @@ import {
   getCountApi,
   getResultApi,
   getTeacherTestApi,
+  getTestByCodeAfterTestApi,
   getTestByCodeApi,
   getTestToUpdateApi,
   leaderBoardApi,
@@ -282,3 +283,19 @@ export const updateQuiz = createAsyncThunk(
     }
   }
 )
+
+ 
+export const getTestByCodeAfterTest = createAsyncThunk(
+  'auth/getTestByCodeAfterTest',
+  async ({ testcode, token }, { rejectWithValue }) => {
+    console.log("testcode",testcode)
+    try {
+      const response = await getTestByCodeAfterTestApi(testcode, token);
+      return response;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch test"
+      );
+    }
+  }
+);

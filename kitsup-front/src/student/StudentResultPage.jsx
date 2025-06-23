@@ -125,6 +125,15 @@ const navigate = useNavigate();
                     See Leaderboard
                 </Button>
 
+                 <Button
+                    variant="contained"
+                    color="secondary"
+                    sx={{ mt: 3 }}
+                    onClick={() => navigate(`/answers/${resultData.student?.test_id}`)}
+                >
+                    See Answers
+                </Button>
+
                 {/* <Typography variant="body1" color="text.secondary" mb={2}>
                     {resultData.remarks || "No remarks provided."}
                 </Typography> */}

@@ -16,6 +16,7 @@ import InstructionsPage from '../student/StudentInstruction'
 import StudentList from '../pages/Teacher/component/StudentList'
 import LeaderBoardPage from '../student/LeaderBoard'
 import UpdateTestForm from '../otherComponent/UpdateTest'
+import { FetchTestAfterTest } from '../otherComponent/FetchTestAfterTest'
 
 const RoutingComponent = () => {
     return (
@@ -150,6 +151,13 @@ const RoutingComponent = () => {
                 path='/update-test/:testcode'
                 element={
                     <UpdateTestForm />
+                }
+            />
+
+            <Route
+                path='/answers/:testcode'
+                element={
+                    <FetchTestAfterTest />
                 }
             />
         </Routes>

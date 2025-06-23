@@ -10,6 +10,7 @@ import {
   getResult,
   getTeacherTests,
   getTestByCode,
+  getTestByCodeAfterTest,
   getTestCount,
   getTestData,
   getTestToUpdate,
@@ -317,34 +318,49 @@ const authSlice = createSlice({
 
     //getTestUpdate
     builder
-       .addCase(getTestToUpdate.pending,(state) =>{
+      .addCase(getTestToUpdate.pending, (state) => {
         state.isLoading = true;
         state.error = null;
-       })
-       .addCase(getTestToUpdate.fulfilled,(state,action) =>{
+      })
+      .addCase(getTestToUpdate.fulfilled, (state, action) => {
         state.isLoading = false;
         state.testToEdit = action.payload;
-        })
-        .addCase(getTestToUpdate.rejected,(state,action) =>{
-          state.isLoading = false;
-          state.error = action.payload
-        })
+      })
+      .addCase(getTestToUpdate.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload
+      })
 
 
-     //update quiz
-    builder 
-        .addCase(updateQuiz.pending,(state) =>{
-          state.isLoading = true;
-          state.error = null;
-        })
-        .addCase(updateQuiz.fulfilled,(state,action) => {
-          state.isLoading - true;
-          state.success = true;
-        })
-        .addCase(updateQuiz.rejected,(state,action) =>{
-          state.isLoading = false;
-          state.error =  action.payload;
-        })
+    //update quiz
+    builder
+      .addCase(updateQuiz.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateQuiz.fulfilled, (state, action) => {
+        state.isLoading - true;
+        state.success = true;
+      })
+      .addCase(updateQuiz.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+    //fetch test after submit
+    builder
+      .addCase(getTestByCodeAfterTest.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getTestByCodeAfterTest.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentTest = action.payload;
+      })
+      .addCase(getTestByCodeAfterTest.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
   },
 });
 

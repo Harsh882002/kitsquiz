@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const BASE_URL = 'https://backend-kitsquiz.onrender.com/api/auth';
+// const BASE_URL = 'https://backend-kitsquiz.onrender.com/api/auth';
 
-// const BASE_URL = "http://localhost:8080/api/auth";
+const BASE_URL = "http://localhost:8080/api/auth";
 
 export const loginApi = (credentials) =>
   axios.post(`${BASE_URL}/login`, credentials);
@@ -221,3 +221,20 @@ export const updateQuizApi = async (testcode, payload, token) => {
     console.log("something went wrong", err);
   }
 }
+
+
+//fetch test after test
+
+export const getTestByCodeAfterTestApi = async (testcode, token) => {
+   try {
+    const response = await axios.get(`${BASE_URL}/answers/${testcode}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Fetching test by code failed:", error);
+    throw error;
+  }
+};
