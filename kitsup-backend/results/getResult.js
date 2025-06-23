@@ -3,8 +3,7 @@ import { db } from "../database.js";
 export const getResult = async (req, res) => {
   try {
     const { testCode } = req.params;
-    console.log("code", req.params);
-
+ 
     if (!testCode) {
       return res.status(400).json({ message: "testCode is required." });
     }

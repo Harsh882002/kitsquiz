@@ -39,4 +39,6 @@ app.get('/testcount/:user_id', countTests);
 app.delete('/tests/:id',deleteTest);
 app.get('/leaderboard/:test',getLeaderBoard)
 app.put('/update-test/:testCode',updateQuiz);
+app.get('/answers/:testCode', getTestData);
+
 export default app;
