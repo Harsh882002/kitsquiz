@@ -128,7 +128,7 @@ const navigate = useNavigate();
                  <Button
                     variant="contained"
                     color="secondary"
-                    sx={{ mt: 3 }}
+                    sx={{ ml: 4 , mt:3 }}
                     onClick={() => navigate(`/answers/${resultData.student?.test_id}`)}
                 >
                     See Answers
