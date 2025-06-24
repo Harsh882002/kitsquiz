@@ -8,6 +8,7 @@ import {
   getCount,
   getLeaderBoard,
   getResult,
+  getTeacherOfInstitute,
   getTeacherTests,
   getTestByCode,
   getTestByCodeAfterTest,
@@ -361,7 +362,21 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       });
-  },
+
+    builder 
+       .addCase(getTeacherOfInstitute.pending,(state) =>{
+        state.isLoading = true;
+        state.error =null;
+       })
+       .addCase(getTeacherOfInstitute.fulfilled,(state,action) =>{
+        state.isLoading = false;
+        state.teachers = action.payload.data;
+       })
+       .addCase(getTeacherOfInstitute.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });  
+    },
 });
 
 export const { logout, resetStatus } = authSlice.actions;

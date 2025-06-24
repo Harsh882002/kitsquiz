@@ -5,12 +5,17 @@ import { useNavigate } from 'react-router-dom';
 const InstituteAdminPage = ({user}) => {
   const navigate = useNavigate();
 
+  const institute = JSON.parse(localStorage.getItem('user'));
+  const institute_id = institute.profile.id;
+ 
   const instituteData = {
     instituteName: user.profile.institute_name,
     type: user.profile.type,
     city: user.profile.city,
     state: user.profile.state,
   };
+
+  
  
 
   const handleTestButton = () => {
@@ -20,6 +25,10 @@ const InstituteAdminPage = ({user}) => {
   const handleAddTeacher = () => {
      navigate("/addteacher")
   };
+
+  const handleSeeTeacher = () =>{
+    navigate(`/institute-teacher/${institute_id}`)
+  }
 
   return (
     <Paper elevation={3} sx={{ px: 4, py: 3, borderRadius: 4 }}>
@@ -69,6 +78,18 @@ const InstituteAdminPage = ({user}) => {
             sx={{ py: 1, fontWeight: 600 }}
           >
             Add Teacher
+          </Button>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Button
+            variant="contained"
+            color="secondary"
+            fullWidth
+            onClick={handleSeeTeacher}
+            sx={{ py: 1, fontWeight: 600 }}
+          >
+            See Teachers
           </Button>
         </Grid>
       </Grid>

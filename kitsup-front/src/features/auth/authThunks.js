@@ -11,6 +11,7 @@ import {
   getAllTestByIdApi,
   getCountApi,
   getResultApi,
+  getTeacherOfInstituteApi,
   getTeacherTestApi,
   getTestByCodeAfterTestApi,
   getTestByCodeApi,
@@ -256,11 +257,11 @@ export const getLeaderBoard = createAsyncThunk(
 
 export const getTestToUpdate = createAsyncThunk(
   "auth/getTestToUpdate",
-  async(testcode,{rejectWithValue}) =>{
-    try{
+  async (testcode, { rejectWithValue }) => {
+    try {
       const data = await getTestToUpdateApi(testcode);
       return data;
-    }catch(error){
+    } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Leaderboard fetch failed"
       );
@@ -272,11 +273,11 @@ export const getTestToUpdate = createAsyncThunk(
 //update test 
 export const updateQuiz = createAsyncThunk(
   'auth/updateQuiz',
-  async({testcode,payload,token},{rejectWithValue}) =>{
-    try{
-      const data = await updateQuizApi(testcode,payload,token);
+  async ({ testcode, payload, token }, { rejectWithValue }) => {
+    try {
+      const data = await updateQuizApi(testcode, payload, token);
       return data;
-    }catch(error){
+    } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Quiz Update Failed"
       )
@@ -284,11 +285,11 @@ export const updateQuiz = createAsyncThunk(
   }
 )
 
- 
+
 export const getTestByCodeAfterTest = createAsyncThunk(
   'auth/getTestByCodeAfterTest',
   async ({ testcode, token }, { rejectWithValue }) => {
-    console.log("testcode",testcode)
+    console.log("testcode", testcode)
     try {
       const response = await getTestByCodeAfterTestApi(testcode, token);
       return response;
@@ -299,3 +300,18 @@ export const getTestByCodeAfterTest = createAsyncThunk(
     }
   }
 );
+
+
+export const getTeacherOfInstitute = createAsyncThunk(
+  'auth/getTeacherOfInstitute',
+  async ({ id, token }, rejectWithValue) => {
+    try {
+      const response = await getTeacherOfInstituteApi(id, token);
+      return response;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch test"
+      )
+    }
+  }
+)

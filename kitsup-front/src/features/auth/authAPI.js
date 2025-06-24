@@ -238,3 +238,19 @@ export const getTestByCodeAfterTestApi = async (testcode, token) => {
     throw error;
   }
 };
+
+
+export const getTeacherOfInstituteApi = async(id,token) =>{
+  try{
+    const response =  await axios.get(`${BASE_URL}/institute-teacher/${id}`,{
+      headers:{
+        Authorization:`Bearer ${token}`
+      },
+    });
+    return response.data;
+  }catch(error){
+    console.log(error);
+    throw error;
+
+  }
+}

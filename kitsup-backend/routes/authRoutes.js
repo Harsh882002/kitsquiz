@@ -18,6 +18,7 @@ import { countTests } from '../teachers/countTests.js';
 import { deleteTest } from '../test/deleteTests.js';
 import { getLeaderBoard } from '../student/leaderboard.js';
 import { updateQuiz } from '../controllers/updateQuiz.js';
+import { getTeacherOfInstitute } from '../institute/getTeacher.js';
 
 const app = express();
 
@@ -40,5 +41,6 @@ app.delete('/tests/:id',deleteTest);
 app.get('/leaderboard/:test',getLeaderBoard)
 app.put('/update-test/:testCode',updateQuiz);
 app.get('/answers/:testCode', getTestData);
+app.get('/institute-teacher/:id',getTeacherOfInstitute);
 
 export default app;

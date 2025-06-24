@@ -13,7 +13,7 @@ const InstitutePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
-  console.log("userva",user)
+  console.log("userva")
   const handleLogout = async () => {
     try {
       // Dispatch logout action

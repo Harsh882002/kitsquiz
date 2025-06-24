@@ -17,6 +17,7 @@ import StudentList from '../pages/Teacher/component/StudentList'
 import LeaderBoardPage from '../student/LeaderBoard'
 import UpdateTestForm from '../otherComponent/UpdateTest'
 import { FetchTestAfterTest } from '../otherComponent/FetchTestAfterTest'
+import { SeeTachersOfInsitute } from '../pages/Institute/SeeTeachers'
 
 const RoutingComponent = () => {
     return (
@@ -159,6 +160,13 @@ const RoutingComponent = () => {
                 element={
                     <FetchTestAfterTest />
                 }
+            />
+
+            <Route 
+           path='/institute-teacher/:id'
+           element={
+            <SeeTachersOfInsitute />
+           }
             />
         </Routes>
 
