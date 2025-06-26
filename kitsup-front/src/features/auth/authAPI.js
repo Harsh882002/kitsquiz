@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const BASE_URL = 'https://backend-kitsquiz.onrender.com/api/auth';
+// const BASE_URL = 'https://backend-kitsquiz.onrender.com/api/auth';
 
-// const BASE_URL = "http://localhost:8080/api/auth";
+const BASE_URL = "http://localhost:8080/api/auth";
 
 export const loginApi = (credentials) =>
   axios.post(`${BASE_URL}/login`, credentials);
@@ -226,7 +226,7 @@ export const updateQuizApi = async (testcode, payload, token) => {
 //fetch test after test
 
 export const getTestByCodeAfterTestApi = async (testcode, token) => {
-   try {
+  try {
     const response = await axios.get(`${BASE_URL}/answers/${testcode}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -240,17 +240,32 @@ export const getTestByCodeAfterTestApi = async (testcode, token) => {
 };
 
 
-export const getTeacherOfInstituteApi = async(id,token) =>{
-  try{
-    const response =  await axios.get(`${BASE_URL}/institute-teacher/${id}`,{
-      headers:{
-        Authorization:`Bearer ${token}`
+export const getTeacherOfInstituteApi = async (id, token) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/institute-teacher/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
       },
     });
     return response.data;
-  }catch(error){
+  } catch (error) {
     console.log(error);
     throw error;
 
+  }
+}
+
+//get All test of teachers from institute
+export const getAllTestsOfInstituteApi = async (institute_id, token) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/all-test/${institute_id}`,{
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
   }
 }

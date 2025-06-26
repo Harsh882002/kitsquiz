@@ -9,6 +9,7 @@ import {
   fetchTestCount,
   getAllTestApi,
   getAllTestByIdApi,
+  getAllTestsOfInstituteApi,
   getCountApi,
   getResultApi,
   getTeacherOfInstituteApi,
@@ -311,6 +312,22 @@ export const getTeacherOfInstitute = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to fetch test"
+      )
+    }
+  }
+)
+
+
+export const getAllTestsOfInstitute = createAsyncThunk(
+  'auth/getAllTestsOfInstitute',
+  async({institute_id,token},rejectWithValue) =>{
+    try{
+      const response = await getAllTestsOfInstituteApi(institute_id,token);
+      console.log("response",response)
+        return response;
+    }catch(err){
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch data"
       )
     }
   }

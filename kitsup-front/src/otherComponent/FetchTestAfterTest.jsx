@@ -26,8 +26,7 @@ export const FetchTestAfterTest = () => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-  console.log("useEffect triggered with testcode:", testcode);
-  if (testcode && token) {
+   if (testcode && token) {
     dispatch(getTestByCodeAfterTest({ testcode, token }));
   }
 }, [dispatch, testcode, token]);

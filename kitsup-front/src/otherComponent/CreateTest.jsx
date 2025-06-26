@@ -25,7 +25,8 @@ const CreateTestForm = () => {
     const dispatch = useDispatch();
     const token = useSelector((state) => state.auth.token);
     const user_id = useSelector((state) => state.auth.user?.id);
-
+    const user = JSON.parse(localStorage.getItem('user'))
+    const institute_id = user.profile.institute_id; 
     const [formData, setFormData] = useState({
         title: '',
         duration: '',
@@ -106,6 +107,7 @@ const CreateTestForm = () => {
                 negative_marking: formData.negative_marking ? 1 : 0,
                 randomize: formData.randomize ? 1 : 0,
                 questions: formattedQuestions,
+                institute_id
             };
 
             setLoading(true);

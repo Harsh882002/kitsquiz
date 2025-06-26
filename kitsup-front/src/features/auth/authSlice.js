@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import {
   deleteTest,
   fetchStudentsByTestcode,
+  getAllTestsOfInstitute,
   getCount,
   getLeaderBoard,
   getResult,
@@ -363,20 +364,35 @@ const authSlice = createSlice({
         state.error = action.payload;
       });
 
-    builder 
-       .addCase(getTeacherOfInstitute.pending,(state) =>{
+    builder
+      .addCase(getTeacherOfInstitute.pending, (state) => {
         state.isLoading = true;
-        state.error =null;
-       })
-       .addCase(getTeacherOfInstitute.fulfilled,(state,action) =>{
+        state.error = null;
+      })
+      .addCase(getTeacherOfInstitute.fulfilled, (state, action) => {
         state.isLoading = false;
         state.teachers = action.payload.data;
-       })
-       .addCase(getTeacherOfInstitute.rejected, (state, action) => {
+      })
+      .addCase(getTeacherOfInstitute.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-      });  
-    },
+      });
+
+
+    builder
+      .addCase(getAllTestsOfInstitute.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getAllTestsOfInstitute.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.tests = action.payload.data; // assuming data is an array of tests
+      })
+       .addCase(getAllTestsOfInstitute.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+},
 });
 
 export const { logout, resetStatus } = authSlice.actions;

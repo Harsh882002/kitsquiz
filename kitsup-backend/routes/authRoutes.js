@@ -19,6 +19,7 @@ import { deleteTest } from '../test/deleteTests.js';
 import { getLeaderBoard } from '../student/leaderboard.js';
 import { updateQuiz } from '../controllers/updateQuiz.js';
 import { getTeacherOfInstitute } from '../institute/getTeacher.js';
+import { getAllTestsOfInstitute } from '../institute/getAllTestsOfInstitute.js';
 
 const app = express();
 
@@ -42,5 +43,6 @@ app.get('/leaderboard/:test',getLeaderBoard)
 app.put('/update-test/:testCode',updateQuiz);
 app.get('/answers/:testCode', getTestData);
 app.get('/institute-teacher/:id',getTeacherOfInstitute);
+app.get('/all-test/:institute_id',getAllTestsOfInstitute);
 
 export default app;

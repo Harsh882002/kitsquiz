@@ -10,6 +10,7 @@ export const uploadQuiz = async (req, res) => {
     negative_marking = 0,
     randomize = 0,
     questions: questionsArray,
+    institute_id
   } = req.body;
 
   // Validate required fields
@@ -41,8 +42,8 @@ export const uploadQuiz = async (req, res) => {
 
     // Insert into `tests` table
     const [testResult] = await connection.execute(
-      `INSERT INTO tests (user_id, title, duration, questions, expire_at, negative_marking, randomize, testcode)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO tests (user_id, title, duration, questions, expire_at, negative_marking, randomize, testcode,institute_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)`,
       [
         user_id,
         title,
@@ -51,7 +52,8 @@ export const uploadQuiz = async (req, res) => {
         expire_at, // already formatted string
         negative_marking,
         randomize,
-        testCode
+        testCode,
+        institute_id
       ]
     );
 
