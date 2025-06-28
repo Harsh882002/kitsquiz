@@ -4,29 +4,29 @@ import SchoolIcon from '@mui/icons-material/School';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllTestsOfInstitute } from '../../../features/auth/authThunks';
 
- 
+
 
 const InsituteQuizzes = () => {
 
   const dispatch = useDispatch();
-  const {tests = [], isLoading, error} =  useSelector((state) => state.auth);
+  const { tests = [], isLoading, error } = useSelector((state) => state.auth);
   const token = localStorage.getItem('token');
   const institute = JSON.parse(localStorage.getItem('user'));
   const institute_id = institute?.profile?.id;
 
-  useEffect(() =>{
-    if(institute_id && token){
-      dispatch(getAllTestsOfInstitute({institute_id,token}));
+  useEffect(() => {
+    if (institute_id && token) {
+      dispatch(getAllTestsOfInstitute({ institute_id, token }));
     }
-  },[dispatch,institute_id,token]);
+  }, [dispatch, institute_id, token]);
 
-  if(isLoading){
-    return(
+  if (isLoading) {
+    return (
       <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="200px"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="200px"
       >
         <CircularProgress color='secondary' />
       </Box>
@@ -57,10 +57,10 @@ const InsituteQuizzes = () => {
                   </Box>
                 </Box>
                 <Typography variant="body1">
-                  Score: <strong>{quiz.questions}</strong>  
- 3                </Typography>
+                  Score: <strong>{quiz.questions}</strong>
+                </Typography>
                 <Typography variant="body1">
-                   Duration : <strong>{quiz.duration} </strong>
+                  Duration : <strong>{quiz.duration} </strong>
                 </Typography>
               </CardContent>
             </Card>
@@ -71,4 +71,4 @@ const InsituteQuizzes = () => {
   );
 };
 
-export default  InsituteQuizzes;
+export default InsituteQuizzes;

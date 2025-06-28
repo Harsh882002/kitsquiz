@@ -26,9 +26,10 @@ const CreateTestForm = () => {
     const token = useSelector((state) => state.auth.token);
     const user_id = useSelector((state) => state.auth.user?.id);
     const user = JSON.parse(localStorage.getItem('user'))
-    const institute_id = user.profile.institute_id; 
+    const institute_id = user.profile.institute_id;
     const [formData, setFormData] = useState({
         title: '',
+        subject: '',
         duration: '',
         quecount: '',
         expire_at: new Date(new Date().getTime() + 60 * 60 * 1000),
@@ -57,6 +58,37 @@ const CreateTestForm = () => {
             expire_at: date
         }));
     };
+
+    const handleGenerateQuestions = () => {
+        const { subject, quecount } = formData;
+
+        if (!subject || !quecount) {
+            setError("Please fill in both Subject and Number of Questions to generate...");
+            return;
+        }
+
+        const prompt = `Generate ${quecount} multiple-choice questions for a test on the subject "${subject}". 
+Return the output in this JSON format:
+
+[
+  {
+    "question_text": "What is ...?",
+    "options": {
+      "a": "Option A",
+      "b": "Option B",
+      "c": "Option C",
+      "d": "Option D"
+    },
+    "correct_answer": "a"
+  }
+]`;
+
+        //Encoded prompt for URL
+        const chatGPTUrl = `https://chat.openai.com/?q=${encodeURIComponent(prompt)}`;
+
+        //open ChatGPT with prompt
+        window.open(chatGPTUrl, '_blank');
+    }
 
     const formatQuestions = (raw) => {
         try {
@@ -191,17 +223,25 @@ const CreateTestForm = () => {
                             required
                         />
 
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DateTimePicker
-                                label="Expire Date & Time"
-                                value={formData.expire_at}
-                                onChange={handleDateChange}
-                                minDateTime={new Date()}
-                                renderInput={(params) => <TextField fullWidth {...params} required />}
-                            />
-                        </LocalizationProvider>
+                      
+                        <TextField
+                            fullWidth
+                            label="Subject / Topic"
+                            placeholder='Subject / Topic want to create test'
+                            name="subject"
+                            value={formData.subject || ''}
+                            onChange={handleChange}
+                            required
+                        />
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={handleGenerateQuestions}
+                        >
+                            Generate Questions
+                        </Button>
 
-                        <CopyTextButton />
+
                         <TextField
                             fullWidth
                             label="Paste Questions (JSON)"
@@ -215,6 +255,16 @@ const CreateTestForm = () => {
                             required
                         />
 
+                          <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <DateTimePicker
+                                label="Expire Date & Time"
+                                value={formData.expire_at}
+                                onChange={handleDateChange}
+                                minDateTime={new Date()}
+                                renderInput={(params) => <TextField fullWidth {...params} required />}
+                            />
+                        </LocalizationProvider>
+                        
                         <Box>
                             <Typography variant="subtitle1" fontWeight="medium" mb={1}>
                                 Test Settings

@@ -37,6 +37,6 @@ export const getAllTestsOfInstitute = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ success: false, message: "Server Error" });
+        return res.status(500).json({ success: false, message: err });
     }
 };

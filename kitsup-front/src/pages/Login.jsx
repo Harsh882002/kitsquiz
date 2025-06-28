@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, TextField, Typography, useMediaQuery } from '@mui/material';
+import { Box, Button, Icon, IconButton, InputAdornment, TextField, Typography, useMediaQuery } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../features/auth/authThunks';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Login = () => {
     const dispatch = useDispatch();
@@ -12,8 +13,10 @@ const Login = () => {
     const { isLoading, isError, error, isAuthenticated } = useSelector((state) => state.auth);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const isMobile = useMediaQuery('(max-width:600px)');
+    const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
     useEffect(() => {
         const isLoggedIn = localStorage.getItem('token');
@@ -130,12 +133,23 @@ const Login = () => {
                         />
                         <TextField
                             label="Password"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             variant="outlined"
                             required
+                            fullWidth
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={handleTogglePassword} edge="end">
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
+
                         <Button
                             type="submit"
                             variant="contained"
